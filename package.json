@@ -1,0 +1,25 @@
+{
+  "name": "generator-rollup",
+  "version": "1.0.0",
+  "description": "Generate an ES6 project with rollup",
+  "files": [
+    "generators"
+  ],
+  "keywords": [
+    "yeoman-generator",
+    "rollup"
+  ],
+  "author": "Gerald <i@gerald.top>",
+  "license": "ISC",
+  "dependencies": {
+    "yeoman-generator": "^1.1.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gera2ld/generator-rollup.git"
+  },
+  "bugs": {
+    "url": "https://github.com/gera2ld/generator-rollup/issues"
+  },
+  "homepage": "https://github.com/gera2ld/generator-rollup#readme"
+}
