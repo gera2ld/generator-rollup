@@ -47,6 +47,7 @@ module.exports = class WebpackGenerator extends Generator {
       'autoprefixer',
       'precss',
       'postcss-modules',
+      'cssnano',
       'rollup-plugin-babel',
       'rollup-plugin-node-resolve',
       'rollup-plugin-commonjs',

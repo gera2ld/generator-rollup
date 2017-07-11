@@ -9,6 +9,7 @@ const postcss = require('gulp-postcss');
 const autoprefixer = require('autoprefixer');
 const precss = require('precss');
 const cssModules = require('postcss-modules');
+const cssnano = require('cssnano');
 const pkg = require('./package.json');
 
 const DIST = 'dist';
@@ -26,9 +27,11 @@ const postcssPlugins = [
       data.STYLES = JSON.stringify(json);
     },
   }),
-];
+  IS_PROD && cssnano(),
+].filter(Boolean);
 const data = {
   VERSION: pkg.version,
+  NODE_ENV: process.env.NODE_ENV || 'development',
 };
 
 const rollupOptions = {
