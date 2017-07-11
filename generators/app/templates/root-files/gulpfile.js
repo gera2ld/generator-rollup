@@ -75,6 +75,7 @@ gulp.task('css', () => {
 
 gulp.task('js', ['css'], () => {
   return gulp.src('src/app.js', {base: 'src'})
+  .pipe(plumber(logError))
   .pipe(rollup(Object.assign({
     entry: 'src/app.js',
   }, rollupOptions)))
