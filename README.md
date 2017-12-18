@@ -3,7 +3,7 @@ generator-rollup
 
 Yeoman generator to create a workspace easy to be packed with Rollup.
 
-It is aimed to generate projects based on JavaScript files, e.g. Userscript projects.
+It is aimed to generate projects based on JavaScript files, e.g. userscripts, JavaScript libraries.
 
 Installation
 ---
