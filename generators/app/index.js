@@ -15,6 +15,12 @@ module.exports = class WebpackGenerator extends Generator {
         type: 'input',
         message: 'Description of your project',
       },
+      {
+        name: 'cssModules',
+        type: 'confirm',
+        message: 'Would you like to use CSS modules?',
+        default: false,
+      },
     ])
     .then(answers => {
       this.state = answers;

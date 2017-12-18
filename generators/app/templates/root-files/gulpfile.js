@@ -12,6 +12,7 @@ const pkg = require('./package.json');
 
 const DIST = 'dist';
 const IS_PROD = process.env.NODE_ENV === 'production';
+const USE_CSS_MODULES = <%= !!cssModules %>;
 const values = {
   'process.env.VERSION': pkg.version,
   'process.env.NODE_ENV': process.env.NODE_ENV || 'development',
@@ -21,7 +22,7 @@ const cssExportMap = {};
 const postcssPlugins = [
   precss(),
   autoprefixer(),
-  cssModules({
+  USE_CSS_MODULES && cssModules({
     getJSON(id, json) {
       cssExportMap[id] = json;
     },
@@ -34,11 +35,14 @@ const rollupOptions = {
     {
       transform(code, id) {
         if (path.extname(id) !== '.css') return;
-        return postcss(postcssPlugins).process(code)
-        .then(result => `export default ${JSON.stringify({
-          css: result.css,
-          classMap: cssExportMap[id],
-        })}`);
+        return postcss(postcssPlugins).process(code, { from: id })
+        .then(result => {
+          const classMap = cssExportMap[id];
+          return [
+            `export const css = ${JSON.stringify(result.css)};`,
+            classMap && `export const classMap = ${JSON.stringify(classMap)};`,
+          ].filter(Boolean).join('\n');
+        });
       },
     },
     require('rollup-plugin-babel')({

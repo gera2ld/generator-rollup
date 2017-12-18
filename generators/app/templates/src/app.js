@@ -1,7 +1,7 @@
-import style from './style.css';
+import { css } from './style.css';
 
 document.head.append(createElement('style', {
-  textContent: style.css,
+  textContent: css,
 }));
 document.body.prepend(createElement('h1', { textContent: 'hello' }));
 
