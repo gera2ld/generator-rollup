@@ -1,8 +1,10 @@
+<% if (css) { -%>
 import { css } from './style.css';
 
 document.head.append(createElement('style', {
   textContent: css,
 }));
+<% } -%>
 document.body.prepend(createElement('h1', { textContent: 'hello' }));
 
 function createElement(tagName, props) {

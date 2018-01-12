@@ -3,21 +3,26 @@ const gulp = require('gulp');
 const gutil = require('gulp-util');
 const eslint = require('gulp-eslint');
 const rollup = require('rollup');
+<% if (css) { -%>
 const postcss = require('postcss');
 const autoprefixer = require('autoprefixer');
 const precss = require('precss');
 const cssModules = require('postcss-modules');
 const cssnano = require('cssnano');
+<% } -%>
 const pkg = require('./package.json');
 
 const DIST = 'dist';
 const IS_PROD = process.env.NODE_ENV === 'production';
+<% if (css) { -%>
 const USE_CSS_MODULES = <%= !!cssModules %>;
+<% } -%>
 const values = {
   'process.env.VERSION': pkg.version,
   'process.env.NODE_ENV': process.env.NODE_ENV || 'development',
 };
 
+<% if (css) { -%>
 const cssExportMap = {};
 const postcssPlugins = [
   precss(),
@@ -29,9 +34,11 @@ const postcssPlugins = [
   }),
   IS_PROD && cssnano(),
 ].filter(Boolean);
+<% } -%>
 
 const rollupOptions = {
   plugins: [
+<% if (css) { -%>
     {
       transform(code, id) {
         if (path.extname(id) !== '.css') return;
@@ -45,6 +52,7 @@ const rollupOptions = {
         });
       },
     },
+<% } -%>
     require('rollup-plugin-babel')({
       runtimeHelpers: true,
       exclude: 'node_modules/**',
@@ -55,11 +63,14 @@ const rollupOptions = {
 
 gulp.task('js', () => {
   return rollup.rollup(Object.assign({
-    input: 'src/app.js',
+    input: 'src/index.js',
   }, rollupOptions))
   .then(bundle => bundle.write({
-    file: `${DIST}/app.user.js`,
-    format: 'iife',
+<% if (bundleName) { -%>
+    name: '<%= bundleName %>',
+<% } -%>
+    file: `${DIST}/index.js`,
+    format: '<%= output %>',
   }))
   .catch(err => {
     gutil.log(err.toString());

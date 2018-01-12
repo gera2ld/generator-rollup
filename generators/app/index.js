@@ -2,8 +2,8 @@ const fs = require('fs');
 const Generator = require('yeoman-generator');
 
 module.exports = class WebpackGenerator extends Generator {
-  prompting() {
-    return this.prompt([
+  async prompting() {
+    const answers = await this.prompt([
       {
         name: 'name',
         type: 'input',
@@ -16,15 +16,46 @@ module.exports = class WebpackGenerator extends Generator {
         message: 'Description of your project',
       },
       {
-        name: 'cssModules',
+        name: 'output',
+        type: 'list',
+        message: 'Which type of output would you like to generate?',
+        choices: [
+          { name: 'UMD', value: 'umd' },
+          { name: 'CommonJS', value: 'cjs' },
+          { name: 'IIFE', value: 'iife' },
+        ],
+        default: 'umd',
+      },
+      {
+        name: 'css',
         type: 'confirm',
-        message: 'Would you like to use CSS modules?',
+        message: 'Would you like to import CSS?',
         default: false,
       },
-    ])
-    .then(answers => {
-      this.state = answers;
-    });
+    ]);
+    if (answers.css) {
+      Object.assign(answers, await this.prompt([
+        {
+          name: 'cssModules',
+          type: 'confirm',
+          message: 'Would you like to use CSS modules?',
+          default: false,
+        },
+      ]));
+    }
+    if (answers.output === 'umd') {
+      Object.assign(answers, await this.prompt([
+        {
+          name: 'bundleName',
+          type: 'input',
+          message: 'Bundle name for UMD',
+          validate(value) {
+            return /^\w+$/.test(value) || 'Invalid bundle name!';
+          },
+        },
+      ]));
+    }
+    this.state = answers;
   }
 
   rootFiles() {
@@ -37,7 +68,10 @@ module.exports = class WebpackGenerator extends Generator {
   }
 
   app() {
-    this.fs.copy(this.templatePath('src'), this.destinationPath('src'));
+    this.fs.copyTpl(this.templatePath('src/index.js'), this.destinationPath('src/index.js'), this.state);
+    if (this.state.css) {
+      this.fs.copy(this.templatePath('src/style.css'), this.destinationPath('src/style.css'));
+    }
   }
 
   install() {
@@ -46,12 +80,7 @@ module.exports = class WebpackGenerator extends Generator {
       'gulp-util',
       'gulp-eslint',
       'rollup',
-      'postcss',
-      'autoprefixer',
-      'precss',
-      'postcss-modules',
-      'cssnano',
-      'rollup-plugin-babel@4.0.0-beta.0',
+      'rollup-plugin-babel@next',
       'rollup-plugin-replace',
       'eslint',
       'eslint-config-airbnb-base',
@@ -59,6 +88,15 @@ module.exports = class WebpackGenerator extends Generator {
       '@babel/core',
       '@babel/preset-env',
     ];
+    if (this.state.css) {
+      deps.push(...[
+        'postcss',
+        'autoprefixer',
+        'precss',
+        'postcss-modules',
+        'cssnano',
+      ]);
+    }
     const res = this.spawnCommandSync('yarn', ['--version']);
     if (res.error && res.error.code === 'ENOENT') {
       this.npmInstall(deps, {saveDev: true});
