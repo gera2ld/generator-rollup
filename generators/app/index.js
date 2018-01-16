@@ -20,11 +20,11 @@ module.exports = class WebpackGenerator extends Generator {
         type: 'list',
         message: 'Which type of output would you like to generate?',
         choices: [
-          { name: 'UMD', value: 'umd' },
-          { name: 'CommonJS', value: 'cjs' },
           { name: 'IIFE', value: 'iife' },
+          { name: 'CommonJS', value: 'cjs' },
+          { name: 'UMD', value: 'umd' },
         ],
-        default: 'umd',
+        default: 'iife',
       },
       {
         name: 'css',
@@ -59,7 +59,7 @@ module.exports = class WebpackGenerator extends Generator {
   }
 
   rootFiles() {
-    const rootFileDir = this.templatePath('root-files');
+    const rootFileDir = this.templatePath('_root');
     fs.readdirSync(rootFileDir)
     .forEach(name => {
       if (name.startsWith('.')) return;
@@ -76,8 +76,8 @@ module.exports = class WebpackGenerator extends Generator {
 
   install() {
     const deps = [
-      'gulp',
-      'gulp-util',
+      'gulp@next',
+      'fancy-log',
       'gulp-eslint',
       'rollup',
       'rollup-plugin-babel@next',
