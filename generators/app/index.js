@@ -1,19 +1,24 @@
-const fs = require('fs');
+const fs = require('mz/fs');
 const Generator = require('yeoman-generator');
 
 module.exports = class WebpackGenerator extends Generator {
   async prompting() {
+    let pkg;
+    try {
+      pkg = JSON.parse(await fs.readFile('package.json', 'utf8'));
+      delete pkg.scripts;
+      delete pkg.dependencies;
+      delete pkg.devDependencies;
+    } catch (err) {
+      // ignore
+    }
+    pkg = pkg || {};
     const answers = await this.prompt([
       {
         name: 'name',
         type: 'input',
         message: 'Your project name',
-        default: this.appname,
-      },
-      {
-        name: 'description',
-        type: 'input',
-        message: 'Description of your project',
+        default: pkg.name || this.appname,
       },
       {
         name: 'output',
@@ -44,7 +49,9 @@ module.exports = class WebpackGenerator extends Generator {
       ]));
     }
     if (answers.output === 'umd') {
-      Object.assign(answers, await this.prompt([
+      Object.assign(answers, {
+        pkg,
+      }, await this.prompt([
         {
           name: 'bundleName',
           type: 'input',
@@ -58,13 +65,16 @@ module.exports = class WebpackGenerator extends Generator {
     this.state = answers;
   }
 
-  rootFiles() {
+  async rootFiles() {
     const rootFileDir = this.templatePath('_root');
-    fs.readdirSync(rootFileDir)
-    .forEach(name => {
+    const files = await fs.readdir(rootFileDir);
+    files.forEach(name => {
       if (name.startsWith('.')) return;
       this.fs.copyTpl(`${rootFileDir}/${name}`, this.destinationPath(name.replace(/^_/, '.')), this.state);
     });
+    this.fs.extendJSON(this.destinationPath('package.json'), Object.assign({
+      name: this.state.name.replace(/\s+/g, '-').toLowerCase(),
+    }, this.state.pkg));
   }
 
   app() {

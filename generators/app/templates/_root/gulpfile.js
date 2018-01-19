@@ -90,4 +90,4 @@ function watch() {
 
 exports.lint = lint;
 exports.build = buildJs;
-exports.watch = gulp.series(buildJs, watch);
+exports.dev = gulp.series(buildJs, watch);
