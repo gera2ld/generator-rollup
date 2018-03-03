@@ -98,6 +98,7 @@ module.exports = class WebpackGenerator extends Generator {
       'babel-eslint',
       '@babel/core',
       '@babel/preset-env',
+      '@babel/preset-stage-2',
     ];
     if (this.state.css) {
       deps.push(...[
