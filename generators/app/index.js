@@ -95,6 +95,7 @@ module.exports = class WebpackGenerator extends Generator {
       'eslint',
       'eslint-config-airbnb-base',
       'eslint-plugin-import',
+      'babel-eslint',
       '@babel/core',
       '@babel/preset-env',
     ];
