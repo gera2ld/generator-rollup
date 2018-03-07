@@ -86,12 +86,14 @@ module.exports = class WebpackGenerator extends Generator {
 
   install() {
     const deps = [
+      'cross-env',
+      'del',
       'gulp@next',
       'fancy-log',
-      'gulp-eslint',
       'rollup',
       'rollup-plugin-babel@next',
       'rollup-plugin-replace',
+      'husky',
       'eslint',
       'eslint-config-airbnb-base',
       'eslint-plugin-import',

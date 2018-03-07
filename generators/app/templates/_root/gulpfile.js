@@ -1,8 +1,8 @@
 const path = require('path');
 const gulp = require('gulp');
 const log = require('fancy-log');
-const eslint = require('gulp-eslint');
 const rollup = require('rollup');
+const del = require('del');
 <% if (css) { -%>
 const postcss = require('postcss');
 const autoprefixer = require('autoprefixer');
@@ -61,6 +61,10 @@ const rollupOptions = {
   ],
 };
 
+function clean() {
+  return del(DIST);
+}
+
 function buildJs() {
   return rollup.rollup(Object.assign({
     input: 'src/index.js',
@@ -77,17 +81,10 @@ function buildJs() {
   });
 }
 
-function lint() {
-  return gulp.src('src/**/*.js')
-  .pipe(eslint())
-  .pipe(eslint.format())
-  .pipe(eslint.failAfterError());
-}
-
 function watch() {
   gulp.watch('src/**', buildJs);
 }
 
-exports.lint = lint;
+exports.clean = clean;
 exports.build = buildJs;
 exports.dev = gulp.series(buildJs, watch);
