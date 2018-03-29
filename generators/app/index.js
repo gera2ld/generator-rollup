@@ -108,7 +108,7 @@ module.exports = class WebpackGenerator extends Generator {
         'autoprefixer',
         'precss',
         'postcss-modules',
-        'cssnano',
+        'cssnano@next', // use cssnano v4 with safe preset
       ]);
     }
     const res = this.spawnCommandSync('yarn', ['--version']);
