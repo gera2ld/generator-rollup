@@ -60,8 +60,8 @@ const commonConfig = {
       },
 <% } -%>
       babel({
-        runtimeHelpers: true,
         exclude: 'node_modules/**',
+        externalHelpers: true,
       }),
       replace({ values }),
     ],
