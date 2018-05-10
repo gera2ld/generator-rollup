@@ -3,6 +3,11 @@ const gulp = require('gulp');
 const log = require('fancy-log');
 const rollup = require('rollup');
 const del = require('del');
+const babel = require('rollup-plugin-babel');
+const replace = require('rollup-plugin-replace');
+<% if (minify) { -%>
+const uglify = require('rollup-plugin-uglify');
+<% } -%>
 <% if (css) { -%>
 const postcss = require('postcss');
 const autoprefixer = require('autoprefixer');
@@ -36,49 +41,86 @@ const postcssPlugins = [
 ].filter(Boolean);
 <% } -%>
 
-const rollupOptions = {
-  plugins: [
+const commonConfig = {
+  input: {
+    plugins: [
 <% if (css) { -%>
-    {
-      transform(code, id) {
-        if (path.extname(id) !== '.css') return;
-        return postcss(postcssPlugins).process(code, { from: id })
-        .then(result => {
-          const classMap = cssExportMap[id];
-          return [
-            `export const css = ${JSON.stringify(result.css)};`,
-            classMap && `export const classMap = ${JSON.stringify(classMap)};`,
-          ].filter(Boolean).join('\n');
-        });
+      {
+        transform(code, id) {
+          if (path.extname(id) !== '.css') return;
+          return postcss(postcssPlugins).process(code, { from: id })
+          .then(result => {
+            const classMap = cssExportMap[id];
+            return [
+              `export const css = ${JSON.stringify(result.css)};`,
+              classMap && `export const classMap = ${JSON.stringify(classMap)};`,
+            ].filter(Boolean).join('\n');
+          });
+        },
       },
-    },
 <% } -%>
-    require('rollup-plugin-babel')({
-      runtimeHelpers: true,
-      exclude: 'node_modules/**',
-    }),
-    require('rollup-plugin-replace')({ values }),
-  ],
+      babel({
+        runtimeHelpers: true,
+        exclude: 'node_modules/**',
+      }),
+      replace({ values }),
+    ],
+  },
 };
+const rollupConfig = [
+<% output.forEach((format, i) => { -%>
+  {
+    input: {
+      ...commonConfig.input,
+      input: 'src/index.js',
+    },
+    output: {
+      ...commonConfig.output,
+      format: '<%= format %>',
+<% if (format === 'umd') { -%>
+      name: '<%= bundleName %>',
+<% } -%>
+      file: `${DIST}/index<%= i ? `.${format}` : '' %>.js`,
+    },
+<% if (minify && format !== 'cjs') { -%>
+    minify: true,
+<% } -%>
+  },
+<% }) -%>
+];
+<% if (minify) { -%>
+// Generate minified versions
+Array.from(rollupConfig)
+.filter(({ minify }) => minify)
+.forEach(config => {
+  rollupConfig.push({
+    input: {
+      ...config.input,
+      plugins: [
+        ...config.input.plugins,
+        uglify(),
+      ],
+    },
+    output: {
+      ...config.output,
+      file: config.output.file.replace(/\.js$/, '.min.js'),
+    },
+  });
+});
+<% } -%>
 
 function clean() {
   return del(DIST);
 }
 
 function buildJs() {
-  return rollup.rollup(Object.assign({
-    input: 'src/index.js',
-  }, rollupOptions))
-  .then(bundle => bundle.write({
-<% if (locals.bundleName) { -%>
-    name: '<%= bundleName %>',
-<% } -%>
-    file: `${DIST}/index.js`,
-    format: '<%= output %>',
-  }))
-  .catch(err => {
-    log(err.toString());
-  });
+  return Promise.all(rollupConfig.map(config => {
+    return rollup.rollup(config.input)
+    .then(bundle => bundle.write(config.output))
+    .catch(err => {
+      log(err.toString());
+    });
+  }));
 }
 
 function watch() {

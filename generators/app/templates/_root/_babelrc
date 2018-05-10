@@ -3,6 +3,8 @@
     ["@babel/preset-env", {
       "modules": false,
     }],
-    "@babel/preset-stage-2",
+    ["@babel/preset-stage-2", {
+      "decoratorsLegacy": true,
+    }],
   ]
 }

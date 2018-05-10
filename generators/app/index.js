@@ -22,36 +22,18 @@ module.exports = class WebpackGenerator extends Generator {
       },
       {
         name: 'output',
-        type: 'list',
-        message: 'Which type of output would you like to generate?',
+        type: 'checkbox',
+        message: 'Which types of output would you like to generate?',
         choices: [
-          { name: 'IIFE', value: 'iife' },
-          { name: 'CommonJS', value: 'cjs' },
           { name: 'UMD', value: 'umd' },
+          { name: 'CommonJS', value: 'cjs' },
+          { name: 'IIFE', value: 'iife' },
         ],
-        default: 'iife',
-      },
-      {
-        name: 'css',
-        type: 'confirm',
-        message: 'Would you like to import CSS?',
-        default: false,
+        default: ['umd'],
       },
     ]);
-    if (answers.css) {
+    if (answers.output.includes('umd')) {
       Object.assign(answers, await this.prompt([
-        {
-          name: 'cssModules',
-          type: 'confirm',
-          message: 'Would you like to use CSS modules?',
-          default: false,
-        },
-      ]));
-    }
-    if (answers.output === 'umd') {
-      Object.assign(answers, {
-        pkg,
-      }, await this.prompt([
         {
           name: 'bundleName',
           type: 'input',
@@ -62,7 +44,31 @@ module.exports = class WebpackGenerator extends Generator {
         },
       ]));
     }
-    this.state = answers;
+    Object.assign(answers, await this.prompt([
+      {
+        name: 'minify',
+        type: 'confirm',
+        message: 'Do you want to generate minified version?',
+        default: false,
+      },
+      {
+        name: 'css',
+        type: 'confirm',
+        message: 'Would you like to import CSS as string?',
+        default: false,
+      },
+    ]));
+    if (answers.css) {
+      Object.assign(answers, await this.prompt([
+        {
+          name: 'cssModules',
+          type: 'confirm',
+          message: 'Would you like to use CSS modules?',
+          default: false,
+        },
+      ]));
+    }
+    this.state = Object.assign(answers, { pkg });
   }
 
   async rootFiles() {
@@ -91,7 +97,7 @@ module.exports = class WebpackGenerator extends Generator {
       'gulp@next',
       'fancy-log',
       'rollup',
-      'rollup-plugin-babel@next',
+      'rollup-plugin-babel@beta',
       'rollup-plugin-replace',
       'husky',
       'eslint',
@@ -109,6 +115,11 @@ module.exports = class WebpackGenerator extends Generator {
         'precss',
         'postcss-modules',
         'cssnano@next', // use cssnano v4 with safe preset
+      ]);
+    }
+    if (this.state.minify) {
+      deps.push(...[
+        'rollup-plugin-uglify',
       ]);
     }
     const res = this.spawnCommandSync('yarn', ['--version']);

@@ -22,5 +22,8 @@
   "bugs": {
     "url": "https://github.com/gera2ld/generator-rollup/issues"
   },
-  "homepage": "https://github.com/gera2ld/generator-rollup#readme"
+  "homepage": "https://github.com/gera2ld/generator-rollup#readme",
+  "devDependencies": {
+    "ejs-lint": "^0.3.0"
+  }
 }
