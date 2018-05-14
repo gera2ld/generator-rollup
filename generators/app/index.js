@@ -99,7 +99,7 @@ module.exports = class WebpackGenerator extends Generator {
       'rollup',
       'rollup-plugin-babel@beta',
       'rollup-plugin-replace',
-      'husky',
+      'husky@next',
       'eslint',
       'eslint-config-airbnb-base',
       'eslint-plugin-import',

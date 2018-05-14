@@ -9,7 +9,11 @@
     "dev": "gulp dev",
     "prebuild": "yarn lint && gulp clean",
     "build": "cross-env NODE_ENV=production gulp build",
-    "lint": "eslint .",
-    "prepush": "yarn lint"
+    "lint": "eslint ."
+  },
+  "husky": {
+    "hooks": {
+      "pre-push": "yarn lint"
+    }
   }
 }
