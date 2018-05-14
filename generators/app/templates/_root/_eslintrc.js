@@ -8,7 +8,10 @@ module.exports = {
     browser: true,
   },
   plugins: [
-    'import'
+    'import',
+<% if (jsx) { -%>
+    'react',
+<% } -%>
   ],
   rules: {
     'no-use-before-define': ['error', 'nofunc'],
@@ -21,5 +24,15 @@ module.exports = {
       allow: ['error', 'warn', 'info'],
     }],
     'no-bitwise': ['error', { int32Hint: true }],
+<% if (jsx) { -%>
+    'react/jsx-uses-react': 'error',
+<% } -%>
   },
+<% if (jsx) { -%>
+  settings: {
+    react: {
+      pragma: 'h',
+    },
+  },
+<% } -%>
 };

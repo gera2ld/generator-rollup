@@ -52,6 +52,12 @@ module.exports = class WebpackGenerator extends Generator {
         default: false,
       },
       {
+        name: 'jsx',
+        type: 'confirm',
+        message: 'Do you want to enable JSX support?',
+        default: false,
+      },
+      {
         name: 'css',
         type: 'confirm',
         message: 'Would you like to import CSS as string?',
@@ -91,7 +97,7 @@ module.exports = class WebpackGenerator extends Generator {
   }
 
   install() {
-    const deps = [
+    const devDeps = [
       'cross-env',
       'del',
       'gulp@next',
@@ -108,8 +114,9 @@ module.exports = class WebpackGenerator extends Generator {
       '@babel/preset-env',
       '@babel/preset-stage-2',
     ];
+    const deps = [];
     if (this.state.css) {
-      deps.push(...[
+      devDeps.push(...[
         'postcss',
         'autoprefixer',
         'precss',
@@ -118,15 +125,26 @@ module.exports = class WebpackGenerator extends Generator {
       ]);
     }
     if (this.state.minify) {
-      deps.push(...[
+      devDeps.push(...[
         'rollup-plugin-uglify',
+      ]);
+    }
+    if (this.state.jsx) {
+      devDeps.push(...[
+        '@babel/plugin-transform-react-jsx',
+        'eslint-plugin-react',
+      ]);
+      deps.push(...[
+        'vm.jsx',
       ]);
     }
     const res = this.spawnCommandSync('yarn', ['--version']);
     if (res.error && res.error.code === 'ENOENT') {
-      this.npmInstall(deps, {saveDev: true});
+      this.npmInstall(devDeps, {saveDev: true});
+      this.npmInstall(deps);
     } else {
-      this.yarnInstall(deps, {dev: true});
+      this.yarnInstall(devDeps, {dev: true});
+      this.yarnInstall(deps);
     }
   }
 }
