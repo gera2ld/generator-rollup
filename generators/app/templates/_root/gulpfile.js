@@ -59,6 +59,8 @@ const commonConfig = {
         },
       },
 <% } -%>
+      // Note: rollup-plugin-babel does not support targeting latest versions
+      // See https://github.com/rollup/rollup-plugin-babel/issues/212
       babel({
         exclude: 'node_modules/**',
         externalHelpers: true,
