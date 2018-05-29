@@ -6,7 +6,7 @@ const del = require('del');
 const babel = require('rollup-plugin-babel');
 const replace = require('rollup-plugin-replace');
 <% if (minify) { -%>
-const uglify = require('rollup-plugin-uglify');
+const { uglify } = require('rollup-plugin-uglify');
 <% } -%>
 <% if (css) { -%>
 const postcss = require('postcss');
