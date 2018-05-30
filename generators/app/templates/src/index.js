@@ -1,13 +1,11 @@
 <% if (jsx) { -%>
-import VM from 'vm.jsx';
+import h from '@gera2ld/jsx-dom';
 <% } -%>
 <% if (css) { -%>
 import { css } from './style.css';
 <% } -%>
 
 <% if (jsx) { -%>
-const h = VM.createElement;
-
 document.body.append(<h1>hello</h1>);
 <% if (css) { -%>
 document.head.append(<style>{css}</style>);

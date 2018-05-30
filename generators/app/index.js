@@ -105,6 +105,8 @@ module.exports = class WebpackGenerator extends Generator {
       'rollup',
       'rollup-plugin-babel@beta',
       'rollup-plugin-replace',
+      'rollup-plugin-node-resolve',
+      'rollup-plugin-commonjs',
       'husky@next',
       'eslint',
       'eslint-config-airbnb-base',
@@ -135,7 +137,7 @@ module.exports = class WebpackGenerator extends Generator {
         'eslint-plugin-react',
       ]);
       deps.push(...[
-        'vm.jsx',
+        '@gera2ld/jsx-dom',
       ]);
     }
     const res = this.spawnCommandSync('yarn', ['--version']);

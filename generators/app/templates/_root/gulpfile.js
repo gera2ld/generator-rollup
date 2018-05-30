@@ -5,6 +5,8 @@ const rollup = require('rollup');
 const del = require('del');
 const babel = require('rollup-plugin-babel');
 const replace = require('rollup-plugin-replace');
+const resolve = require('rollup-plugin-node-resolve');
+const commonjs = require('rollup-plugin-commonjs');
 <% if (minify) { -%>
 const { uglify } = require('rollup-plugin-uglify');
 <% } -%>
@@ -59,13 +61,13 @@ const commonConfig = {
         },
       },
 <% } -%>
-      // Note: rollup-plugin-babel does not support targeting latest versions
-      // See https://github.com/rollup/rollup-plugin-babel/issues/212
       babel({
         exclude: 'node_modules/**',
         externalHelpers: true,
       }),
       replace({ values }),
+      resolve(),
+      commonjs(),
     ],
   },
 };
