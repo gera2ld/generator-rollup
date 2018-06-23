@@ -21,15 +21,12 @@ const pkg = require('./package.json');
 
 const DIST = 'dist';
 const IS_PROD = process.env.NODE_ENV === 'production';
-<% if (css) { -%>
-const USE_CSS_MODULES = <%= !!cssModules %>;
-<% } -%>
 const values = {
   'process.env.VERSION': pkg.version,
   'process.env.NODE_ENV': process.env.NODE_ENV || 'development',
 };
-
 <% if (css) { -%>
+const USE_CSS_MODULES = <%= !!cssModules %>;
 const cssExportMap = {};
 const postcssPlugins = [
   precss(),
@@ -43,48 +40,57 @@ const postcssPlugins = [
 ].filter(Boolean);
 <% } -%>
 
-const commonConfig = {
-  input: {
-    plugins: [
+const getRollupPlugins = ({ babelConfig } = {}) => [
 <% if (css) { -%>
-      {
-        transform(code, id) {
-          if (path.extname(id) !== '.css') return;
-          return postcss(postcssPlugins).process(code, { from: id })
-          .then(result => {
-            const classMap = cssExportMap[id];
-            return [
-              `export const css = ${JSON.stringify(result.css)};`,
-              classMap && `export const classMap = ${JSON.stringify(classMap)};`,
-            ].filter(Boolean).join('\n');
-          });
-        },
-      },
-<% } -%>
-      babel({
-        exclude: 'node_modules/**',
-        externalHelpers: true,
-      }),
-      replace({ values }),
-      resolve(),
-      commonjs(),
-    ],
+  {
+    transform(code, id) {
+      if (path.extname(id) !== '.css') return;
+      return postcss(postcssPlugins).process(code, { from: id })
+      .then(result => {
+        const classMap = cssExportMap[id];
+        return [
+          `export const css = ${JSON.stringify(result.css)};`,
+          classMap && `export const classMap = ${JSON.stringify(classMap)};`,
+        ].filter(Boolean).join('\n');
+      });
+    },
   },
-};
+<% } -%>
+  babel({
+    exclude: 'node_modules/**',
+    externalHelpers: true,
+    ...babelConfig,
+  }),
+  replace({ values }),
+  resolve(),
+  commonjs(),
+];
+
 const rollupConfig = [
 <% output.forEach((format, i) => { -%>
   {
     input: {
-      ...commonConfig.input,
       input: 'src/index.js',
+<% if (format === 'cjs') { -%>
+      plugins: getRollupPlugins({
+        babelConfig: {
+          runtimeHelpers: true,
+          plugins: [
+            ['@babel/plugin-transform-runtime', { polyfill: false }],
+          ],
+        },
+      }),
+      external: id => id.startsWith('@babel/runtime/'),
+<% } else { -%>
+      plugins: getRollupPlugins(),
+<% } -%>
     },
     output: {
-      ...commonConfig.output,
       format: '<%= format %>',
+      file: `${DIST}/index<%= i ? `.${format}` : '' %>.js`,
 <% if (format === 'umd') { -%>
       name: '<%= bundleName %>',
 <% } -%>
-      file: `${DIST}/index<%= i ? `.${format}` : '' %>.js`,
     },
 <% if (minify && format !== 'cjs') { -%>
     minify: true,

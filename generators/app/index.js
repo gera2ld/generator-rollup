@@ -140,6 +140,14 @@ module.exports = class WebpackGenerator extends Generator {
         '@gera2ld/jsx-dom',
       ]);
     }
+    if (this.state.output.includes('cjs')) {
+      devDeps.push(...[
+        '@babel/plugin-transform-runtime',
+      ]);
+      deps.push(...[
+        '@babel/runtime',
+      ]);
+    }
     const res = this.spawnCommandSync('yarn', ['--version']);
     if (res.error && res.error.code === 'ENOENT') {
       this.npmInstall(devDeps, {saveDev: true});
