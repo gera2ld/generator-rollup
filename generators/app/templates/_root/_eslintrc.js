@@ -24,6 +24,7 @@ module.exports = {
       allow: ['error', 'warn', 'info'],
     }],
     'no-bitwise': ['error', { int32Hint: true }],
+    indent: ['error', 2, { MemberExpression: 0 }],
 <% if (jsx) { -%>
     'react/jsx-uses-react': 'error',
 <% } -%>
