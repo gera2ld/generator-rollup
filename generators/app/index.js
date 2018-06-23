@@ -31,6 +31,15 @@ module.exports = class WebpackGenerator extends Generator {
         ],
         default: ['umd'],
       },
+      {
+        name: 'outputDir',
+        type: 'input',
+        message: 'The name of your output directory',
+        default: 'dist',
+        validate(value) {
+          return /^[\w-]+$/.test(value) || 'Invalid directory name!';
+        },
+      },
     ]);
     if (answers.output.includes('umd')) {
       Object.assign(answers, await this.prompt([

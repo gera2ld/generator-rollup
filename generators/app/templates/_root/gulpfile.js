@@ -19,7 +19,7 @@ const cssnano = require('cssnano');
 <% } -%>
 const pkg = require('./package.json');
 
-const DIST = 'dist';
+const DIST = '<%= outputDir %>';
 const IS_PROD = process.env.NODE_ENV === 'production';
 const values = {
   'process.env.VERSION': pkg.version,
