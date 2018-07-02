@@ -1,7 +1,14 @@
 {
   "name": "",
   "version": "0.0.0",
+<% if (hasMain) { -%>
+  "main": "<%= outputDir %>/index.js",
+  "files": [
+    "<%= outputDir %>"
+  ],
+<% } else { -%>
   "private": true,
+<% } -%>
   "description": "",
   "author": "",
   "license": "ISC",

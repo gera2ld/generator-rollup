@@ -40,6 +40,12 @@ module.exports = class WebpackGenerator extends Generator {
           return /^[\w-]+$/.test(value) || 'Invalid directory name!';
         },
       },
+      {
+        name: 'hasMain',
+        type: 'confirm',
+        message: 'Would you like to add a main script?',
+        default: true,
+      },
     ]);
     if (answers.output.includes('umd')) {
       Object.assign(answers, await this.prompt([
