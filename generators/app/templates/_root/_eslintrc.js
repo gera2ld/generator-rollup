@@ -27,6 +27,7 @@ module.exports = {
     indent: ['error', 2, { MemberExpression: 0 }],
 <% if (jsx) { -%>
     'react/jsx-uses-react': 'error',
+    'react/react-in-jsx-scope': 'error',
 <% } -%>
   },
 <% if (jsx) { -%>
