@@ -40,7 +40,7 @@ const postcssPlugins = [
 ].filter(Boolean);
 <% } -%>
 
-const getRollupPlugins = ({ babelConfig } = {}) => [
+const getRollupPlugins = ({ babelConfig, browser } = {}) => [
 <% if (css) { -%>
   {
     transform(code, id) {
@@ -58,37 +58,40 @@ const getRollupPlugins = ({ babelConfig } = {}) => [
 <% } -%>
   babel({
     exclude: 'node_modules/**',
-    externalHelpers: true,
+    ...browser ? {
+      // Combine all helpers at the top of the bundle
+      externalHelpers: true,
+    } : {
+      // Require helpers from '@babel/runtime'
+      runtimeHelpers: true,
+      plugins: [
+        ['@babel/plugin-transform-runtime', { polyfill: false }],
+      ],
+    },
     ...babelConfig,
   }),
   replace({ values }),
   resolve(),
   commonjs(),
 ];
+const getExternal = (externals = []) => id => {
+  return id.startsWith('@babel/runtime/') || externals.includes(id);
+};
 
 const rollupConfig = [
 <% output.forEach((format, i) => { -%>
   {
     input: {
       input: 'src/index.js',
+      plugins: getRollupPlugins({ browser: <%= format !== 'cjs' %> }),
 <% if (format === 'cjs') { -%>
-      plugins: getRollupPlugins({
-        babelConfig: {
-          runtimeHelpers: true,
-          plugins: [
-            ['@babel/plugin-transform-runtime', { polyfill: false }],
-          ],
-        },
-      }),
-      external: id => id.startsWith('@babel/runtime/'),
-<% } else { -%>
-      plugins: getRollupPlugins(),
+      external: getExternal(),
 <% } -%>
     },
     output: {
       format: '<%= format %>',
       file: `${DIST}/index<%= i ? `.${format}` : '' %>.js`,
-<% if (format === 'umd') { -%>
+<% if (['umd', 'iife'].includes(format)) { -%>
       name: '<%= bundleName %>',
 <% } -%>
     },
