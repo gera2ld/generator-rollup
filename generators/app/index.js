@@ -129,7 +129,19 @@ module.exports = class WebpackGenerator extends Generator {
       'babel-eslint',
       '@babel/core',
       '@babel/preset-env',
-      '@babel/preset-stage-2',
+
+      // stage-2
+      '@babel/plugin-proposal-decorators',
+      '@babel/plugin-proposal-function-sent',
+      '@babel/plugin-proposal-export-namespace-from',
+      '@babel/plugin-proposal-numeric-separator',
+      '@babel/plugin-proposal-throw-expressions',
+
+      // stage-3
+      '@babel/plugin-syntax-dynamic-import',
+      '@babel/plugin-syntax-import-meta',
+      '@babel/plugin-proposal-class-properties',
+      '@babel/plugin-proposal-json-strings',
     ];
     const deps = [];
     if (this.state.css) {
