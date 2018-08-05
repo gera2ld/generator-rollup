@@ -1,16 +1,7 @@
-<% if (jsx) { -%>
-import h from '@gera2ld/jsx-dom';
-<% } -%>
 <% if (css) { -%>
 import { css } from './style.css';
-<% } -%>
 
-<% if (jsx) { -%>
-document.body.append(<h1>hello</h1>);
-<% if (css) { -%>
-document.head.append(<style>{css}</style>);
 <% } -%>
-<% } else { -%>
 document.body.prepend(createElement('h1', { textContent: 'hello' }));
 <% if (css) { -%>
 document.head.append(createElement('style', {
@@ -25,4 +16,3 @@ function createElement(tagName, props) {
   }
   return el;
 }
-<% } -%>

@@ -65,7 +65,7 @@ const getRollupPlugins = ({ babelConfig, browser } = {}) => [
       // Require helpers from '@babel/runtime'
       runtimeHelpers: true,
       plugins: [
-        ['@babel/plugin-transform-runtime', { polyfill: false }],
+        '@babel/plugin-transform-runtime',
       ],
     },
     ...babelConfig,

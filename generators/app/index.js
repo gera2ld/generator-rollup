@@ -9,6 +9,9 @@ module.exports = class WebpackGenerator extends Generator {
       delete pkg.scripts;
       delete pkg.dependencies;
       delete pkg.devDependencies;
+      delete pkg.main;
+      delete pkg.files;
+      delete pkg.private;
     } catch (err) {
       // ignore
     }
@@ -47,12 +50,12 @@ module.exports = class WebpackGenerator extends Generator {
         default: true,
       },
     ]);
-    if (answers.output.includes('umd')) {
+    if (['umd', 'iife'].some(format => answers.output.includes(format))) {
       Object.assign(answers, await this.prompt([
         {
           name: 'bundleName',
           type: 'input',
-          message: 'Bundle name for UMD',
+          message: 'Bundle name',
           validate(value) {
             return /^\w+$/.test(value) || 'Invalid bundle name!';
           },
@@ -99,13 +102,26 @@ module.exports = class WebpackGenerator extends Generator {
       if (name.startsWith('.')) return;
       this.fs.copyTpl(`${rootFileDir}/${name}`, this.destinationPath(name.replace(/^_/, '.')), this.state);
     });
-    this.fs.extendJSON(this.destinationPath('package.json'), Object.assign({
+    this.fs.extendJSON(this.destinationPath('package.json'), {
       name: this.state.name.replace(/\s+/g, '-').toLowerCase(),
-    }, this.state.pkg));
+      ...this.state.pkg,
+      ...this.state.hasMain ? {
+        main: `${this.state.outputDir}/index.js`,
+        files: [
+          this.state.outputDir,
+        ],
+      } : {
+        private: true,
+      },
+    });
   }
 
   app() {
-    this.fs.copyTpl(this.templatePath('src/index.js'), this.destinationPath('src/index.js'), this.state);
+    this.fs.copyTpl(
+      this.templatePath(this.state.jsx ? 'src/index-jsx.js' : 'src/index.js'),
+      this.destinationPath('src/index.js'),
+      this.state,
+    );
     if (this.state.css) {
       this.fs.copy(this.templatePath('src/style.css'), this.destinationPath('src/style.css'));
     }
