@@ -129,17 +129,23 @@ function clean() {
 function buildJs() {
   return Promise.all(rollupConfig.map(config => {
     return rollup.rollup(config.input)
-    .then(bundle => bundle.write(config.output))
-    .catch(err => {
-      log(err.toString());
-    });
+    .then(bundle => bundle.write(config.output));
   }));
 }
 
-function watch() {
-  gulp.watch('src/**', buildJs);
+function wrapError(handle) {
+  return () => handle()
+  .catch(err => {
+    log(err.toString());
+  });
 }
+
+function watch() {
+  gulp.watch('src/**', safeBuildJs);
+}
+
+const safeBuildJs = wrapError(buildJs);
 
 exports.clean = clean;
 exports.build = buildJs;
-exports.dev = gulp.series(buildJs, watch);
+exports.dev = gulp.series(safeBuildJs, watch);
