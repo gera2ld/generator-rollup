@@ -134,7 +134,7 @@ module.exports = class WebpackGenerator extends Generator {
       'gulp@next',
       'fancy-log',
       'rollup',
-      'rollup-plugin-babel@beta',
+      'rollup-plugin-babel',
       'rollup-plugin-replace',
       'rollup-plugin-node-resolve',
       'rollup-plugin-commonjs',
