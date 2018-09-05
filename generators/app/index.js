@@ -6,7 +6,6 @@ module.exports = class WebpackGenerator extends Generator {
     let pkg;
     try {
       pkg = JSON.parse(await fs.readFile('package.json', 'utf8'));
-      delete pkg.scripts;
       delete pkg.dependencies;
       delete pkg.devDependencies;
       delete pkg.main;
