@@ -6,13 +6,13 @@
   "license": "ISC",
   "scripts": {
     "dev": "gulp dev",
-    "prebuild": "yarn lint && gulp clean",
+    "prebuild": "npm run lint && gulp clean",
     "build": "cross-env NODE_ENV=production gulp build",
     "lint": "eslint ."
   },
   "husky": {
     "hooks": {
-      "pre-push": "yarn lint"
+      "pre-push": "npm run lint"
     }
   }
 }
