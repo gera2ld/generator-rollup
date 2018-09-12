@@ -134,10 +134,12 @@ function buildJs() {
 }
 
 function wrapError(handle) {
-  return () => handle()
+  const wrapped = () => handle()
   .catch(err => {
     log(err.toString());
   });
+  wrapped.displayName = handle.name;
+  return wrapped;
 }
 
 function watch() {
