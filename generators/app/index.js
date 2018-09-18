@@ -1,11 +1,22 @@
-const fs = require('mz/fs');
+const fs = require('fs');
+const path = require('path');
 const Generator = require('yeoman-generator');
+const globby = require('globby');
 
-module.exports = class WebpackGenerator extends Generator {
+module.exports = class BaseGenerator extends Generator {
+  _copyDir(src, dest) {
+    const files = globby.sync(`${this.templatePath(src)}/**`, { nodir: true });
+    const dir = this.destinationPath(dest);
+    for (const file of files) {
+      const destFile = path.join(dir, path.basename(file).replace(/^_/, '.'));
+      this.fs.copyTpl(file, destFile, this.state);
+    }
+  }
+
   async prompting() {
     let pkg;
     try {
-      pkg = JSON.parse(await fs.readFile('package.json', 'utf8'));
+      pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
       delete pkg.dependencies;
       delete pkg.devDependencies;
       delete pkg.main;
@@ -15,6 +26,14 @@ module.exports = class WebpackGenerator extends Generator {
       // ignore
     }
     pkg = pkg || {};
+    const whenExportBundle = answers => {
+      const options = {
+        ...this.options,
+        ...answers,
+      };
+      const output = options.output || [];
+      return ['umd', 'iife'].some(fmt => output.includes(fmt));
+    };
     const answers = await this.prompt([
       {
         name: 'name',
@@ -27,46 +46,29 @@ module.exports = class WebpackGenerator extends Generator {
         type: 'checkbox',
         message: 'Which types of output would you like to generate?',
         choices: [
-          { name: 'UMD', value: 'umd' },
           { name: 'CommonJS', value: 'cjs' },
+          { name: 'ES Module', value: 'esm' },
+          { name: 'UMD', value: 'umd' },
           { name: 'IIFE', value: 'iife' },
         ],
-        default: ['umd'],
+        default: ['cjs', 'esm'],
+        when: !this.options.output,
       },
       {
-        name: 'outputDir',
+        name: 'bundleName',
         type: 'input',
-        message: 'The name of your output directory',
-        default: 'dist',
+        message: 'Bundle name',
         validate(value) {
-          return /^[\w-]+$/.test(value) || 'Invalid directory name!';
+          return /^(\w+\.)*\w+$/.test(value) || 'Invalid bundle name!';
         },
+        when: !this.options.bundleName && whenExportBundle,
       },
-      {
-        name: 'hasMain',
-        type: 'confirm',
-        message: 'Would you like to add a main script?',
-        default: true,
-      },
-    ]);
-    if (['umd', 'iife'].some(format => answers.output.includes(format))) {
-      Object.assign(answers, await this.prompt([
-        {
-          name: 'bundleName',
-          type: 'input',
-          message: 'Bundle name',
-          validate(value) {
-            return /^\w+$/.test(value) || 'Invalid bundle name!';
-          },
-        },
-      ]));
-    }
-    Object.assign(answers, await this.prompt([
       {
         name: 'minify',
         type: 'confirm',
         message: 'Do you want to generate minified version?',
         default: false,
+        when: whenExportBundle,
       },
       {
         name: 'jsx',
@@ -80,38 +82,22 @@ module.exports = class WebpackGenerator extends Generator {
         message: 'Would you like to import CSS as string?',
         default: false,
       },
-    ]));
-    if (answers.css) {
-      Object.assign(answers, await this.prompt([
-        {
-          name: 'cssModules',
-          type: 'confirm',
-          message: 'Would you like to use CSS modules?',
-          default: false,
-        },
-      ]));
-    }
-    this.state = Object.assign(answers, { pkg });
+    ]);
+    this.state = {
+      bundleName: 'noname',
+      minify: false,
+      ...this.options,
+      ...answers,
+      pkg,
+    };
   }
 
   async rootFiles() {
-    const rootFileDir = this.templatePath('_root');
-    const files = await fs.readdir(rootFileDir);
-    files.forEach(name => {
-      if (name.startsWith('.')) return;
-      this.fs.copyTpl(`${rootFileDir}/${name}`, this.destinationPath(name.replace(/^_/, '.')), this.state);
-    });
+    this._copyDir('_root', '.');
+    this._copyDir('_scripts', 'scripts');
     this.fs.extendJSON(this.destinationPath('package.json'), {
       name: this.state.name.replace(/\s+/g, '-').toLowerCase(),
       ...this.state.pkg,
-      ...this.state.hasMain ? {
-        main: `${this.state.outputDir}/index.js`,
-        files: [
-          this.state.outputDir,
-        ],
-      } : {
-        private: true,
-      },
     });
   }
 
@@ -144,6 +130,7 @@ module.exports = class WebpackGenerator extends Generator {
       'babel-eslint',
       '@babel/core',
       '@babel/preset-env',
+      '@babel/plugin-transform-runtime',
 
       // stage-2
       '@babel/plugin-proposal-decorators',
@@ -158,14 +145,16 @@ module.exports = class WebpackGenerator extends Generator {
       '@babel/plugin-proposal-class-properties',
       '@babel/plugin-proposal-json-strings',
     ];
-    const deps = [];
+    const deps = [
+      '@babel/runtime',
+    ];
     if (this.state.css) {
       devDeps.push(...[
         'postcss',
         'autoprefixer',
         'precss',
         'postcss-modules',
-        'cssnano@next', // use cssnano v4 with safe preset
+        'cssnano',
       ]);
     }
     if (this.state.minify) {
@@ -182,20 +171,12 @@ module.exports = class WebpackGenerator extends Generator {
         '@gera2ld/jsx-dom',
       ]);
     }
-    if (this.state.output.includes('cjs')) {
-      devDeps.push(...[
-        '@babel/plugin-transform-runtime',
-      ]);
-      deps.push(...[
-        '@babel/runtime',
-      ]);
-    }
     const res = this.spawnCommandSync('yarn', ['--version']);
     if (res.error && res.error.code === 'ENOENT') {
-      this.npmInstall(devDeps, {saveDev: true});
+      this.npmInstall(devDeps, { saveDev: true });
       this.npmInstall(deps);
     } else {
-      this.yarnInstall(devDeps, {dev: true});
+      this.yarnInstall(devDeps, { dev: true });
       this.yarnInstall(deps);
     }
   }

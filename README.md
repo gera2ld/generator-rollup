@@ -16,17 +16,27 @@ $ yarn global add @gera2ld/generator-rollup
 
 # You can also clone the generator and link it to global node_modules
 $ git clone https://github.com/gera2ld/generator-rollup.git
-$ cd path/to/generator-rollup && yarn link
 ```
 
 Usage
 ---
 
-``` sh
-# Make sure yeoman is installed
-$ yarn global add yo
+1. Make sure yeoman is installed
 
-# Initialize your project
-$ cd my-project
-$ yo @gera2ld/rollup
-```
+   ``` sh
+   $ yarn global add yo
+   ```
+
+2. Initialize a library repo
+
+   ```sh
+   $ cd my-library
+   $ yo @gera2ld/rollup
+   ```
+
+3. Initialize a browser script repo
+
+   ```sh
+   $ cd my-script
+   $ yo @gera2ld/rollup:script
+   ```

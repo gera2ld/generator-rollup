@@ -1,7 +1,7 @@
 <%= name %>
 ---
 
-This is an ES6 project built with yeoman and [@gera2ld/generator-rollup](https://github.com/gera2ld/generator-rollup).
+This project is generated from [@gera2ld/generator-rollup](https://github.com/gera2ld/generator-rollup).
 
 Development
 ---

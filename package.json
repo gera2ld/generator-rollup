@@ -12,8 +12,8 @@
   "author": "Gerald <i@gerald.top>",
   "license": "ISC",
   "dependencies": {
-    "mz": "^2.7.0",
-    "yeoman-generator": "^2.0.1"
+    "globby": "^8.0.1",
+    "yeoman-generator": "^3.1.1"
   },
   "repository": {
     "type": "git",

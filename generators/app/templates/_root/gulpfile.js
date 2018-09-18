@@ -3,103 +3,73 @@ const gulp = require('gulp');
 const log = require('fancy-log');
 const rollup = require('rollup');
 const del = require('del');
-const babel = require('rollup-plugin-babel');
-const replace = require('rollup-plugin-replace');
-const resolve = require('rollup-plugin-node-resolve');
-const commonjs = require('rollup-plugin-commonjs');
 <% if (minify) { -%>
 const { uglify } = require('rollup-plugin-uglify');
 <% } -%>
-<% if (css) { -%>
-const postcss = require('postcss');
-const autoprefixer = require('autoprefixer');
-const precss = require('precss');
-const cssModules = require('postcss-modules');
-const cssnano = require('cssnano');
-<% } -%>
-const pkg = require('./package.json');
+const { getRollupPlugins, getExternal } = require('./scripts/util');
 
-const DIST = '<%= outputDir %>';
-const IS_PROD = process.env.NODE_ENV === 'production';
-const values = {
-  'process.env.VERSION': pkg.version,
-  'process.env.NODE_ENV': process.env.NODE_ENV || 'development',
-};
-<% if (css) { -%>
-const USE_CSS_MODULES = <%= !!cssModules %>;
-const cssExportMap = {};
-const postcssPlugins = [
-  precss(),
-  autoprefixer(),
-  USE_CSS_MODULES && cssModules({
-    getJSON(id, json) {
-      cssExportMap[id] = json;
-    },
-  }),
-  IS_PROD && cssnano(),
-].filter(Boolean);
-<% } -%>
-
-const getRollupPlugins = ({ babelConfig, browser } = {}) => [
-<% if (css) { -%>
-  {
-    transform(code, id) {
-      if (path.extname(id) !== '.css') return;
-      return postcss(postcssPlugins).process(code, { from: id })
-      .then(result => {
-        const classMap = cssExportMap[id];
-        return [
-          `export const css = ${JSON.stringify(result.css)};`,
-          classMap && `export const classMap = ${JSON.stringify(classMap)};`,
-        ].filter(Boolean).join('\n');
-      });
-    },
-  },
-<% } -%>
-  babel({
-    exclude: 'node_modules/**',
-    ...browser ? {
-      // Combine all helpers at the top of the bundle
-      externalHelpers: true,
-    } : {
-      // Require helpers from '@babel/runtime'
-      runtimeHelpers: true,
-      plugins: [
-        '@babel/plugin-transform-runtime',
-      ],
-    },
-    ...babelConfig,
-  }),
-  replace({ values }),
-  resolve(),
-  commonjs(),
-];
-const getExternal = (externals = []) => id => {
-  return id.startsWith('@babel/runtime/') || externals.includes(id);
-};
+const DIST = 'dist';
+const FILENAME = 'index';
 
 const rollupConfig = [
-<% output.forEach((format, i) => { -%>
+<% if (output.includes('cjs')) { -%>
   {
     input: {
       input: 'src/index.js',
-      plugins: getRollupPlugins({ browser: <%= format !== 'cjs' %> }),
-<% if (format === 'cjs') { -%>
+      plugins: getRollupPlugins(),
       external: getExternal(),
-<% } -%>
     },
     output: {
-      format: '<%= format %>',
-      file: `${DIST}/index<%= i ? `.${format}` : '' %>.js`,
-<% if (['umd', 'iife'].includes(format)) { -%>
-      name: '<%= bundleName %>',
-<% } -%>
+      format: 'cjs',
+      file: `${DIST}/${FILENAME}.common.js`,
     },
-<% if (minify && format !== 'cjs') { -%>
+  },
+<% } -%>
+<% if (output.includes('esm')) { -%>
+  {
+    input: {
+      input: 'src/index.js',
+      plugins: getRollupPlugins(),
+      external: getExternal(),
+    },
+    output: {
+      format: 'esm',
+      file: `${DIST}/${FILENAME}.esm.js`,
+    },
+  },
+<% } -%>
+<% if (output.includes('umd')) { -%>
+  {
+    input: {
+      input: 'src/index.js',
+      plugins: getRollupPlugins({ browser: true }),
+    },
+    output: {
+      format: 'umd',
+      file: `${DIST}/${FILENAME}.js`,
+      name: '<%= bundleName %>',
+    },
+<% if (minify) { -%>
     minify: true,
 <% } -%>
   },
-<% }) -%>
+<% } -%>
+<% if (output.includes('iife')) { -%>
+  {
+    input: {
+      input: 'src/index.js',
+      plugins: getRollupPlugins({ browser: true }),
+    },
+    output: {
+      format: 'iife',
+      file: `${DIST}/${FILENAME}.iife.js`,
+      name: '<%= bundleName %>',
+    },
+<% if (minify) { -%>
+    minify: true,
+<% } -%>
+  },
+<% } -%>
 ];
 <% if (minify) { -%>
 // Generate minified versions
