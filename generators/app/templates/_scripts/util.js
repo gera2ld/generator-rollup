@@ -1,11 +1,12 @@
 <% if (css) { -%>
 const fs = require('fs');
-const path = require('path');
 <% } -%>
+const path = require('path');
 const babel = require('rollup-plugin-babel');
 const replace = require('rollup-plugin-replace');
 const resolve = require('rollup-plugin-node-resolve');
 const commonjs = require('rollup-plugin-commonjs');
+const alias = require('rollup-plugin-alias');
 <% if (css) { -%>
 const postcss = require('postcss');
 const autoprefixer = require('autoprefixer');
@@ -41,6 +42,9 @@ const rollupPluginMap = {
 <% if (css) { -%>
   css: () => cssPlugin(),
 <% } -%>
+  alias: () => alias({
+    '#': path.resolve('src'),
+  }),
   babel: ({ babelConfig, browser }) => babel({
     ...browser ? {
       // Combine all helpers at the top of the bundle
@@ -121,6 +125,7 @@ function cssPlugin() {
 <% } -%>
 function getRollupPlugins({ babelConfig, browser } = {}) {
   return [
+    rollupPluginMap.alias(),
 <% if (css) { -%>
     rollupPluginMap.css(),
 <% } -%>

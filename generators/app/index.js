@@ -20,6 +20,7 @@ module.exports = class BaseGenerator extends Generator {
       delete pkg.dependencies;
       delete pkg.devDependencies;
       delete pkg.main;
+      delete pkg.module;
       delete pkg.files;
       delete pkg.private;
     } catch (err) {
@@ -82,6 +83,12 @@ module.exports = class BaseGenerator extends Generator {
         message: 'Would you like to import CSS as string?',
         default: false,
       },
+      {
+        name: 'test',
+        type: 'confirm',
+        message: 'Would you like to add tests?',
+        default: false,
+      },
     ]);
     this.state = {
       bundleName: 'noname',
@@ -95,10 +102,30 @@ module.exports = class BaseGenerator extends Generator {
   async rootFiles() {
     this._copyDir('_root', '.');
     this._copyDir('_scripts', 'scripts');
-    this.fs.extendJSON(this.destinationPath('package.json'), {
+    const pkg = {
       name: this.state.name.replace(/\s+/g, '-').toLowerCase(),
       ...this.state.pkg,
-    });
+    };
+    let hasFiles = false;
+    if (this.state.output.includes('cjs')) {
+      pkg.main = 'dist/index.common.js';
+      hasFiles = true;
+    } else if (this.state.output.includes('umd')) {
+      pkg.main = 'dist/index.js';
+      hasFiles = true;
+    }
+    if (this.state.output.includes('esm')) {
+      pkg.module = 'dist/index.esm.js';
+      hasFiles = true;
+    }
+    if (hasFiles) {
+      pkg.files = ['dist'];
+    }
+    if (this.state.test) {
+      pkg.scripts.pretest = 'cross-env NODE_ENV=production gulp buildTest';
+      pkg.scripts.test = 'node dist/test';
+    }
+    this.fs.extendJSON(this.destinationPath('package.json'), pkg);
   }
 
   app() {
@@ -109,6 +136,9 @@ module.exports = class BaseGenerator extends Generator {
     );
     if (this.state.css) {
       this.fs.copy(this.templatePath('src/style.css'), this.destinationPath('src/style.css'));
+    }
+    if (this.state.test) {
+      this.fs.copy(this.templatePath('test'), this.destinationPath('test'));
     }
   }
 
@@ -123,6 +153,7 @@ module.exports = class BaseGenerator extends Generator {
       'rollup-plugin-replace',
       'rollup-plugin-node-resolve',
       'rollup-plugin-commonjs',
+      'rollup-plugin-alias',
       'husky',
       'eslint',
       'eslint-config-airbnb-base',
@@ -169,6 +200,11 @@ module.exports = class BaseGenerator extends Generator {
       ]);
       deps.push(...[
         '@gera2ld/jsx-dom',
+      ]);
+    }
+    if (this.state.test) {
+      devDeps.push(...[
+        'tape',
       ]);
     }
     const res = this.spawnCommandSync('yarn', ['--version']);
