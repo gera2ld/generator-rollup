@@ -123,7 +123,7 @@ module.exports = class BaseGenerator extends Generator {
       'rollup-plugin-replace',
       'rollup-plugin-node-resolve',
       'rollup-plugin-commonjs',
-      'husky@next',
+      'husky',
       'eslint',
       'eslint-config-airbnb-base',
       'eslint-plugin-import',
