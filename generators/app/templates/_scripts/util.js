@@ -42,7 +42,8 @@ const rollupPluginMap = {
 <% if (css) { -%>
   css: () => cssPlugin(),
 <% } -%>
-  alias: () => alias({
+  alias: aliases => alias({
+    ...aliases,
     '#': path.resolve('src'),
   }),
   babel: ({ babelConfig, browser }) => babel({
@@ -123,9 +124,9 @@ function cssPlugin() {
 }
 
 <% } -%>
-function getRollupPlugins({ babelConfig, browser } = {}) {
+function getRollupPlugins({ babelConfig, browser, aliases } = {}) {
   return [
-    rollupPluginMap.alias(),
+    rollupPluginMap.alias(aliases),
 <% if (css) { -%>
     rollupPluginMap.css(),
 <% } -%>
