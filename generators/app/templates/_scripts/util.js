@@ -42,10 +42,7 @@ const rollupPluginMap = {
 <% if (css) { -%>
   css: () => cssPlugin(),
 <% } -%>
-  alias: aliases => alias({
-    ...aliases,
-    '#': path.resolve('src'),
-  }),
+  alias: aliases => alias(aliases),
   babel: ({ babelConfig, browser }) => babel({
     ...browser ? {
       // Combine all helpers at the top of the bundle
@@ -126,7 +123,7 @@ function cssPlugin() {
 <% } -%>
 function getRollupPlugins({ babelConfig, browser, aliases } = {}) {
   return [
-    rollupPluginMap.alias(aliases),
+    aliases && rollupPluginMap.alias(aliases),
 <% if (css) { -%>
     rollupPluginMap.css(),
 <% } -%>
@@ -134,7 +131,7 @@ function getRollupPlugins({ babelConfig, browser, aliases } = {}) {
     rollupPluginMap.replace(),
     rollupPluginMap.resolve(),
     rollupPluginMap.commonjs(),
-  ];
+  ].filter(Boolean);
 }
 
 function getExternal(externals = []) {

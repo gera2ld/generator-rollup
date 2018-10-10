@@ -20,6 +20,12 @@
     "@babel/plugin-syntax-import-meta",
     ["@babel/plugin-proposal-class-properties", { "loose": false }],
     "@babel/plugin-proposal-json-strings",
+
+    ["module-resolver", {
+      "alias": {
+        "#": "./src",
+      },
+    }],
 <% if (jsx) { -%>
 
     // react
@@ -28,4 +34,13 @@
     }],
 <% } -%>
   ],
+<% if (test) { -%>
+  "env": {
+    "test": {
+      "plugins": [
+        "istanbul"
+      ]
+    }
+  }
+<% } -%>
 }

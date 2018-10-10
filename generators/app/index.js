@@ -122,18 +122,25 @@ module.exports = class BaseGenerator extends Generator {
       pkg.files = ['dist'];
     }
     if (this.state.test) {
-      pkg.scripts.pretest = 'cross-env NODE_ENV=production gulp buildTest';
-      pkg.scripts.test = 'node dist/test';
+      pkg.scripts = {
+        ...pkg.scripts,
+        pretest: 'cross-env NODE_ENV=production BABEL_ENV=test gulp buildTest',
+        test: 'node dist/test',
+        cov: 'nyc --reporter=text --reporter=html npm test',
+        'cov:open': 'open coverage/index.html',
+      };
+      pkg.nyc = {
+        include: [
+          'src/**',
+        ],
+      };
     }
     this.fs.extendJSON(this.destinationPath('package.json'), pkg);
   }
 
   app() {
-    this.fs.copyTpl(
-      this.templatePath(this.state.jsx ? 'src/index-jsx.js' : 'src/index.js'),
-      this.destinationPath('src/index.js'),
-      this.state,
-    );
+    this.fs.copyTpl(this.templatePath('src/index.js'), this.destinationPath('src/index.js'), this.state);
+    this.fs.copy(this.templatePath('src/util.js'), this.destinationPath('src/util.js'));
     if (this.state.css) {
       this.fs.copy(this.templatePath('src/style.css'), this.destinationPath('src/style.css'));
     }
@@ -162,6 +169,8 @@ module.exports = class BaseGenerator extends Generator {
       '@babel/core',
       '@babel/preset-env',
       '@babel/plugin-transform-runtime',
+      'babel-plugin-module-resolver',
+      'eslint-import-resolver-babel-module@beta',
 
       // stage-2
       '@babel/plugin-proposal-decorators',
@@ -205,6 +214,8 @@ module.exports = class BaseGenerator extends Generator {
     if (this.state.test) {
       devDeps.push(...[
         'tape',
+        'babel-plugin-istanbul',
+        'nyc',
       ]);
     }
     const res = this.spawnCommandSync('yarn', ['--version']);

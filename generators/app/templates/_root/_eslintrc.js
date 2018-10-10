@@ -30,11 +30,14 @@ module.exports = {
     'react/react-in-jsx-scope': 'error',
 <% } -%>
   },
-<% if (jsx) { -%>
   settings: {
+    'import/resolver': {
+      'babel-module': {},
+    },
+<% if (jsx) { -%>
     react: {
       pragma: 'h',
     },
-  },
 <% } -%>
+  },
 };

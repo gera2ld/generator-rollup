@@ -1,8 +1,9 @@
 import test from 'tape';
+import add from '#/util';
 
-test('src/index', t => {
+test('src/util', t => {
   t.test('ok', q => {
-    q.ok(true);
+    q.equal(add(1, 2), 3);
     q.end();
   });
 });
