@@ -43,6 +43,12 @@ module.exports = class BaseGenerator extends Generator {
         default: pkg.name || this.appname,
       },
       {
+        name: 'ts',
+        type: 'confirm',
+        message: 'Do you want to use TypeScript?',
+        default: false,
+      },
+      {
         name: 'output',
         type: 'checkbox',
         message: 'Which types of output would you like to generate?',
@@ -104,6 +110,10 @@ module.exports = class BaseGenerator extends Generator {
     this._copyDir('_scripts', 'scripts');
     const pkg = {
       name: this.state.name.replace(/\s+/g, '-').toLowerCase(),
+      scripts: {
+        dev: 'gulp dev',
+        prebuild: 'npm run lint && gulp clean',
+      },
       ...this.state.pkg,
     };
     let hasFiles = false;
@@ -120,6 +130,25 @@ module.exports = class BaseGenerator extends Generator {
     }
     if (hasFiles) {
       pkg.files = ['dist'];
+    }
+    if (this.state.ts) {
+      pkg.files = [
+        ...pkg.files || [],
+        'types',
+      ];
+      pkg.scripts = {
+        ...pkg.scripts,
+        build: 'tsc && cross-env NODE_ENV=production gulp build',
+        lint: 'tslint -c tslint.json \'src/**/*.ts\'',
+      };
+      this._copyDir('_ts', '.');
+    } else {
+      pkg.scripts = {
+        ...pkg.scripts,
+        build: 'cross-env NODE_ENV=production gulp build',
+        lint: 'eslint .',
+      };
+      this._copyDir('_js', '.');
     }
     if (this.state.test) {
       pkg.scripts = {
@@ -139,8 +168,12 @@ module.exports = class BaseGenerator extends Generator {
   }
 
   app() {
-    this.fs.copyTpl(this.templatePath('src/index.js'), this.destinationPath('src/index.js'), this.state);
-    this.fs.copy(this.templatePath('src/util.js'), this.destinationPath('src/util.js'));
+    const ext = this.state.ts ? '.ts' : '.js';
+    this.fs.copyTpl(this.templatePath('src/index.js'), this.destinationPath(`src/index${ext}`), this.state);
+    this.fs.copy(this.templatePath('src/util.js'), this.destinationPath(`src/util${ext}`));
+    if (this.state.ts) {
+      this.fs.copy(this.templatePath('src/index.d.ts'), this.destinationPath('src/index.d.ts'));
+    }
     if (this.state.css) {
       this.fs.copy(this.templatePath('src/style.css'), this.destinationPath('src/style.css'));
     }
@@ -162,15 +195,10 @@ module.exports = class BaseGenerator extends Generator {
       'rollup-plugin-commonjs',
       'rollup-plugin-alias',
       'husky',
-      'eslint',
-      'eslint-config-airbnb-base',
-      'eslint-plugin-import',
-      'babel-eslint',
       '@babel/core',
       '@babel/preset-env',
       '@babel/plugin-transform-runtime',
       'babel-plugin-module-resolver',
-      'eslint-import-resolver-babel-module@beta',
 
       // stage-2
       '@babel/plugin-proposal-decorators',
@@ -188,35 +216,50 @@ module.exports = class BaseGenerator extends Generator {
     const deps = [
       '@babel/runtime',
     ];
+    if (this.state.ts) {
+      devDeps.push(
+        '@babel/preset-typescript',
+        'typescript',
+        'tslint',
+      );
+    } else {
+      devDeps.push(
+        'eslint',
+        'eslint-config-airbnb-base',
+        'eslint-plugin-import',
+        'babel-eslint',
+        'eslint-import-resolver-babel-module@beta',
+      );
+    }
     if (this.state.css) {
-      devDeps.push(...[
+      devDeps.push(
         'postcss',
         'autoprefixer',
         'precss',
         'postcss-modules',
         'cssnano',
-      ]);
+      );
     }
     if (this.state.minify) {
-      devDeps.push(...[
+      devDeps.push(
         'rollup-plugin-uglify',
-      ]);
+      );
     }
     if (this.state.jsx) {
-      devDeps.push(...[
+      devDeps.push(
         '@babel/plugin-transform-react-jsx',
         'eslint-plugin-react',
-      ]);
-      deps.push(...[
+      );
+      deps.push(
         '@gera2ld/jsx-dom',
-      ]);
+      );
     }
     if (this.state.test) {
-      devDeps.push(...[
+      devDeps.push(
         'tape',
         'babel-plugin-istanbul',
         'nyc',
-      ]);
+      );
     }
     const res = this.spawnCommandSync('yarn', ['--version']);
     if (res.error && res.error.code === 'ENOENT') {

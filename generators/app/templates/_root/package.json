@@ -4,12 +4,6 @@
   "description": "",
   "author": "",
   "license": "ISC",
-  "scripts": {
-    "dev": "gulp dev",
-    "prebuild": "npm run lint && gulp clean",
-    "build": "cross-env NODE_ENV=production gulp build",
-    "lint": "eslint ."
-  },
   "husky": {
     "hooks": {
       "pre-push": "npm run lint"

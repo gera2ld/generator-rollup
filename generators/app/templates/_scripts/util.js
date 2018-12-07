@@ -21,6 +21,9 @@ const values = {
   'process.env.VERSION': pkg.version,
   'process.env.NODE_ENV': process.env.NODE_ENV || 'development',
 };
+<% if (ts) { -%>
+const extensions = ['.ts', '.js'];
+<% } -%>
 
 <% if (css) { -%>
 const postcssPluginMap = {
@@ -55,10 +58,13 @@ const rollupPluginMap = {
       ],
     },
     exclude: 'node_modules/**',
+<% if (ts) { -%>
+    extensions,
+<% } -%>
     ...babelConfig,
   }),
   replace: () => replace({ values }),
-  resolve: () => resolve(),
+  resolve: () => resolve(<% if (ts) { %>{ extensions }<% } %>),
   commonjs: () => commonjs(),
 };
 

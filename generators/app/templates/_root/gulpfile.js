@@ -11,11 +11,12 @@ const { getRollupPlugins, getExternal } = require('./scripts/util');
 const DIST = 'dist';
 const FILENAME = 'index';
 
+<% const ext = ts ? '.ts' : '.js'; -%>
 const rollupConfig = [
 <% if (output.includes('cjs')) { -%>
   {
     input: {
-      input: 'src/index.js',
+      input: 'src/index<%= ext %>',
       plugins: getRollupPlugins(),
       external: getExternal(),
     },
@@ -28,7 +29,7 @@ const rollupConfig = [
 <% if (output.includes('esm')) { -%>
   {
     input: {
-      input: 'src/index.js',
+      input: 'src/index<%= ext %>',
       plugins: getRollupPlugins(),
       external: getExternal(),
     },
@@ -41,7 +42,7 @@ const rollupConfig = [
 <% if (output.includes('umd')) { -%>
   {
     input: {
-      input: 'src/index.js',
+      input: 'src/index<%= ext %>',
       plugins: getRollupPlugins({ browser: true }),
     },
     output: {
@@ -57,7 +58,7 @@ const rollupConfig = [
 <% if (output.includes('iife')) { -%>
   {
     input: {
-      input: 'src/index.js',
+      input: 'src/index<%= ext %>',
       plugins: getRollupPlugins({ browser: true }),
     },
     output: {
@@ -109,7 +110,7 @@ const testConfig = [
 <% } -%>
 
 function clean() {
-  return del(DIST);
+  return del([DIST<% if (ts) { %>, 'types'<% } %>]);
 }
 
 function buildJs() {
