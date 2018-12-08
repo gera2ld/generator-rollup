@@ -1,22 +1,21 @@
-<%= name %>
----
+# <%= name %>
 
 This project is generated from [@gera2ld/generator-rollup](https://github.com/gera2ld/generator-rollup).
 
-Development
----
+## Development
+
 ``` sh
 $ yarn dev
 ```
 
-Building
----
+## Building
+
 ```sh
 $ yarn build
 ```
 
-Lint
----
+## Lint
+
 ``` sh
 $ yarn lint
 ```
