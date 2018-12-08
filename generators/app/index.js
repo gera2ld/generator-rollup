@@ -136,6 +136,7 @@ module.exports = class BaseGenerator extends Generator {
         ...pkg.files || [],
         'types',
       ];
+      pkg.typings = 'types/index.d.ts';
       pkg.scripts = {
         ...pkg.scripts,
         build: 'tsc && cross-env NODE_ENV=production gulp build',
