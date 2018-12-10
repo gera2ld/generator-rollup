@@ -139,14 +139,14 @@ module.exports = class BaseGenerator extends Generator {
       pkg.typings = 'types/index.d.ts';
       pkg.scripts = {
         ...pkg.scripts,
-        build: 'tsc && cross-env NODE_ENV=production gulp build',
+        build: 'tsc && gulp build',
         lint: 'tslint -c tslint.json \'src/**/*.ts\'',
       };
       this._copyDir('_ts', '.');
     } else {
       pkg.scripts = {
         ...pkg.scripts,
-        build: 'cross-env NODE_ENV=production gulp build',
+        build: 'gulp build',
         lint: 'eslint .',
       };
       this._copyDir('_js', '.');
@@ -154,7 +154,7 @@ module.exports = class BaseGenerator extends Generator {
     if (this.state.test) {
       pkg.scripts = {
         ...pkg.scripts,
-        test: 'cross-env NODE_ENV=production BABEL_ENV=test tape -r ./test/mock \'test/**/*.test.js\'',
+        test: 'cross-env BABEL_ENV=test tape -r ./test/mock/register \'test/**/*.test.js\'',
         cov: 'nyc --reporter=text --reporter=html npm test',
         'cov:open': 'open coverage/index.html',
       };

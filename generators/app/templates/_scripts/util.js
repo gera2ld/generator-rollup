@@ -16,10 +16,8 @@ const cssnano = require('cssnano');
 <% } -%>
 const pkg = require('../package.json');
 
-const IS_PROD = process.env.NODE_ENV === 'production';
 const values = {
   'process.env.VERSION': pkg.version,
-  'process.env.NODE_ENV': process.env.NODE_ENV || 'development',
 };
 <% if (ts) { -%>
 const extensions = ['.ts', '.js'];
@@ -77,7 +75,7 @@ function getPostcssPlugins({ cssModules } = {}) {
     postcssPluginMap.precss(),
     postcssPluginMap.autoprefixer(),
     cssModules && postcssPluginMap.cssModules(cssModules),
-    IS_PROD && postcssPluginMap.cssnano(),
+    postcssPluginMap.cssnano(),
   ].filter(Boolean);
 }
 
