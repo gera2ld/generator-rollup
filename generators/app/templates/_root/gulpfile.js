@@ -92,22 +92,6 @@ Array.from(rollupConfig)
   });
 });
 <% } -%>
-<% if (test) { -%>
-
-const testConfig = [
-  {
-    input: {
-      input: 'test/index.js',
-      plugins: getRollupPlugins(),
-      external: id => /node_modules/.test(id),
-    },
-    output: {
-      format: 'cjs',
-      file: `${DIST}/test.js`,
-    },
-  },
-];
-<% } -%>
 
 function clean() {
   return del([DIST<% if (ts) { %>, 'types'<% } %>]);
@@ -119,15 +103,6 @@ function buildJs() {
     .then(bundle => bundle.write(config.output));
   }));
 }
-<% if (test) { -%>
-
-function buildTest() {
-  return Promise.all(testConfig.map(config => {
-    return rollup.rollup(config.input)
-    .then(bundle => bundle.write(config.output));
-  }));
-}
-<% } -%>
 
 function wrapError(handle) {
   const wrapped = () => handle()
@@ -147,6 +122,3 @@ const safeBuildJs = wrapError(buildJs);
 exports.clean = clean;
 exports.build = buildJs;
 exports.dev = gulp.series(safeBuildJs, watch);
-<% if (test) { -%>
-exports.buildTest = buildTest;
-<% } -%>

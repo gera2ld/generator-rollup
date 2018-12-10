@@ -154,8 +154,7 @@ module.exports = class BaseGenerator extends Generator {
     if (this.state.test) {
       pkg.scripts = {
         ...pkg.scripts,
-        pretest: 'cross-env NODE_ENV=production BABEL_ENV=test gulp buildTest',
-        test: 'node dist/test',
+        test: 'cross-env NODE_ENV=production BABEL_ENV=test tape -r ./test/mock \'test/**/*.test.js\'',
         cov: 'nyc --reporter=text --reporter=html npm test',
         'cov:open': 'open coverage/index.html',
       };
@@ -258,6 +257,7 @@ module.exports = class BaseGenerator extends Generator {
     if (this.state.test) {
       devDeps.push(
         'tape',
+        '@babel/register',
         'babel-plugin-istanbul',
         'nyc',
       );
