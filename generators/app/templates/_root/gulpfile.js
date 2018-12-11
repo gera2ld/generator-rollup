@@ -12,13 +12,14 @@ const DIST = 'dist';
 const FILENAME = 'index';
 
 <% const ext = ts ? '.ts' : '.js'; -%>
+const external = getExternal();
 const rollupConfig = [
 <% if (output.includes('cjs')) { -%>
   {
     input: {
       input: 'src/index<%= ext %>',
       plugins: getRollupPlugins(),
-      external: getExternal(),
+      external,
     },
     output: {
       format: 'cjs',
@@ -31,7 +32,7 @@ const rollupConfig = [
     input: {
       input: 'src/index<%= ext %>',
       plugins: getRollupPlugins(),
-      external: getExternal(),
+      external,
     },
     output: {
       format: 'esm',
