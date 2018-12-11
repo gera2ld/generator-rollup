@@ -186,7 +186,7 @@ module.exports = class BaseGenerator extends Generator {
     const devDeps = [
       'cross-env',
       'del',
-      'gulp@next',
+      'gulp',
       'fancy-log',
       'rollup',
       'rollup-plugin-babel',
