@@ -5,7 +5,8 @@
     "moduleResolution": "node",
     "declaration": true,
     "emitDeclarationOnly": true,
-    "outDir": "types"
+    "outDir": "types",
+    "allowSyntheticDefaultImports": true
   },
   "files": [
     "src/index.ts",
