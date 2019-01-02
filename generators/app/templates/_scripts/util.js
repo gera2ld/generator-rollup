@@ -20,7 +20,7 @@ const values = {
   'process.env.VERSION': pkg.version,
 };
 <% if (ts) { -%>
-const extensions = ['.ts', '.js'];
+const extensions = ['.ts', '.tsx', '.js'];
 <% } -%>
 
 <% if (css) { -%>
