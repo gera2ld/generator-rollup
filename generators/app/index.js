@@ -110,11 +110,13 @@ module.exports = class BaseGenerator extends Generator {
     this._copyDir('_scripts', 'scripts');
     const pkg = {
       name: this.state.name.replace(/\s+/g, '-').toLowerCase(),
-      scripts: {
-        dev: 'gulp dev',
-        prebuild: 'npm run lint && gulp clean',
-      },
       ...this.state.pkg,
+      scripts: {
+        ...this.state.pkg.scripts,
+        dev: 'gulp dev',
+        prebuild: 'npm run ci && gulp clean',
+        ci: 'npm run lint',
+      },
     };
     let hasFiles = false;
     if (this.state.output.includes('cjs')) {
@@ -154,6 +156,7 @@ module.exports = class BaseGenerator extends Generator {
     if (this.state.test) {
       pkg.scripts = {
         ...pkg.scripts,
+        ci: 'npm run lint && npm run test',
         test: 'cross-env BABEL_ENV=test tape -r ./test/mock/register \'test/**/*.test.js\'',
         cov: 'nyc --reporter=text --reporter=html npm test',
         'cov:open': 'open coverage/index.html',
