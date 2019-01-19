@@ -237,8 +237,10 @@ module.exports = class BaseGenerator extends Generator {
     if (this.state.css) {
       devDeps.push(
         'postcss',
-        'autoprefixer',
+        'postcss-scss',
         'precss',
+        'postcss-color-function',
+        'postcss-calc',
         'postcss-modules',
         'cssnano',
       );

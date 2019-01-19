@@ -9,10 +9,7 @@ const commonjs = require('rollup-plugin-commonjs');
 const alias = require('rollup-plugin-alias');
 <% if (css) { -%>
 const postcss = require('postcss');
-const autoprefixer = require('autoprefixer');
-const precss = require('precss');
 const cssModules = require('postcss-modules');
-const cssnano = require('cssnano');
 <% } -%>
 const pkg = require('../package.json');
 
@@ -24,16 +21,6 @@ const extensions = ['.ts', '.tsx', '.js'];
 <% } -%>
 
 <% if (css) { -%>
-const postcssPluginMap = {
-  precss: () => precss(),
-  autoprefixer: () => autoprefixer(),
-  cssModules: ({ cssMap }) => cssModules({
-    getJSON(id, json) {
-      cssMap[id] = json;
-    },
-  }),
-  cssnano: () => cssnano(),
-};
 const postcssPlugins = {
   css: getPostcssPlugins(),
   cssModules: getPostcssPlugins({ cssModules: true }),
@@ -72,19 +59,21 @@ exports.getExternal = getExternal;
 <% if (css) { -%>
 function getPostcssPlugins({ cssModules } = {}) {
   return [
-    postcssPluginMap.precss(),
-    postcssPluginMap.autoprefixer(),
-    cssModules && postcssPluginMap.cssModules(cssModules),
-    postcssPluginMap.cssnano(),
+    require('precss'),
+    require('postcss-color-function'),
+    require('postcss-calc'),
+    cssModules && require('postcss-modules')(cssModules),
+    require('cssnano'),
   ].filter(Boolean);
 }
 
+const postcssPlugins = {
+  css: getPostcssPlugins(),
+  cssModules: getPostcssPlugins({ cssModules: { cssMap } }),
+};
+
 function cssPlugin() {
   const cssMap = {};
-  const postcssPlugins = {
-    css: getPostcssPlugins(),
-    cssModules: getPostcssPlugins({ cssModules: { cssMap } }),
-  };
   return {
     name: 'CSSPlugin',
     resolveId(importee, importer) {
@@ -111,7 +100,10 @@ function cssPlugin() {
         plugins = postcssPlugins.css;
       }
       if (plugins) {
-        return postcss(plugins).process(code, { from: filename })
+        return postcss(plugins).process(code, {
+          from: filename,
+          parser: require('postcss-scss'),
+        })
         .then(result => {
           const classMap = cssMap[filename];
           return [
