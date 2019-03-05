@@ -1,5 +1,5 @@
 import test from 'tape';
-import add from '#/util';
+import { add } from '#/util';
 
 test('src/util', t => {
   t.test('ok', q => {
