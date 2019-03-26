@@ -20,12 +20,6 @@ const values = {
 const extensions = ['.ts', '.tsx', '.js'];
 <% } -%>
 
-<% if (css) { -%>
-const postcssPlugins = {
-  css: getPostcssPlugins(),
-  cssModules: getPostcssPlugins({ cssModules: true }),
-};
-<% } -%>
 const rollupPluginMap = {
 <% if (css) { -%>
   css: () => cssPlugin(),
@@ -67,13 +61,12 @@ function getPostcssPlugins({ cssModules } = {}) {
   ].filter(Boolean);
 }
 
-const postcssPlugins = {
-  css: getPostcssPlugins(),
-  cssModules: getPostcssPlugins({ cssModules: { cssMap } }),
-};
-
 function cssPlugin() {
   const cssMap = {};
+  const postcssPlugins = {
+    css: getPostcssPlugins(),
+    cssModules: getPostcssPlugins({ cssModules: { cssMap } }),
+  };
   return {
     name: 'CSSPlugin',
     resolveId(importee, importer) {

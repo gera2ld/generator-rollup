@@ -1,4 +1,3 @@
-const path = require('path');
 const gulp = require('gulp');
 const log = require('fancy-log');
 const rollup = require('rollup');
@@ -75,8 +74,7 @@ const rollupConfig = [
 ];
 <% if (minify) { -%>
 // Generate minified versions
-Array.from(rollupConfig)
-.filter(({ minify }) => minify)
+rollupConfig.filter(({ minify }) => minify)
 .forEach(config => {
   rollupConfig.push({
     input: {

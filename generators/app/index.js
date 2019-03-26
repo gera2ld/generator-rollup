@@ -203,10 +203,14 @@ module.exports = class BaseGenerator extends Generator {
       '@babel/plugin-transform-runtime',
       'babel-plugin-module-resolver',
 
+      // stage-1
+      '@babel/plugin-proposal-export-namespace-from',
+      '@babel/plugin-proposal-export-default-from',
+      '@babel/plugin-proposal-pipeline-operator',
+
       // stage-2
       '@babel/plugin-proposal-decorators',
       '@babel/plugin-proposal-function-sent',
-      '@babel/plugin-proposal-export-namespace-from',
       '@babel/plugin-proposal-numeric-separator',
       '@babel/plugin-proposal-throw-expressions',
 
