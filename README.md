@@ -43,9 +43,9 @@ Usage
    $ yo @gera2ld/rollup
    ```
 
-3. Initialize a browser script repo
+3. Initialize a browser-only script / userscript / iife repo
 
    ```sh
    $ cd my-script
-   $ yo @gera2ld/rollup:script
+   $ yo @gera2ld/rollup:iife
    ```
