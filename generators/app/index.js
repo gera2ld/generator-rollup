@@ -27,13 +27,21 @@ module.exports = class BaseGenerator extends Generator {
       // ignore
     }
     pkg = pkg || {};
+    const defaults = {
+      bundleName: 'noname',
+      banner: true,
+      minify: false,
+      pkg,
+    };
+    const state = {
+      ...this.options,
+    };
     const whenExportBundle = answers => {
-      const options = {
-        ...this.options,
+      const { output } = {
+        ...state,
         ...answers,
       };
-      const output = options.output || [];
-      return ['umd', 'iife'].some(fmt => output.includes(fmt));
+      return output && ['umd', 'iife'].some(fmt => output.includes(fmt));
     };
     const answers = await this.prompt([
       {
@@ -59,7 +67,7 @@ module.exports = class BaseGenerator extends Generator {
           { name: 'IIFE', value: 'iife' },
         ],
         default: ['cjs', 'esm'],
-        when: !this.options.output,
+        when: !state.output,
       },
       {
         name: 'bundleName',
@@ -68,7 +76,7 @@ module.exports = class BaseGenerator extends Generator {
         validate(value) {
           return /^(\w+\.)*\w+$/.test(value) || 'Invalid bundle name!';
         },
-        when: !this.options.bundleName && whenExportBundle,
+        when: !state.bundleName && whenExportBundle,
       },
       {
         name: 'minify',
@@ -97,11 +105,9 @@ module.exports = class BaseGenerator extends Generator {
       },
     ]);
     this.state = {
-      bundleName: 'noname',
-      minify: false,
-      ...this.options,
+      ...defaults,
+      ...state,
       ...answers,
-      pkg,
     };
   }
 

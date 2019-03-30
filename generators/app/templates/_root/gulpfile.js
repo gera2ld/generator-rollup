@@ -6,9 +6,11 @@ const del = require('del');
 const { uglify } = require('rollup-plugin-uglify');
 <% } -%>
 const { getRollupPlugins, getExternal } = require('./scripts/util');
+const pkg = require('./package.json');
 
 const DIST = 'dist';
 const FILENAME = 'index';
+const BANNER = <% if (banner) { %>`/*! ${pkg.name} v${pkg.version} | ${pkg.license} License */`<% } else { %>false<% } %>;
 
 <% const ext = ts ? '.ts' : '.js'; -%>
 const external = getExternal();
@@ -81,7 +83,13 @@ rollupConfig.filter(({ minify }) => minify)
       ...config.input,
       plugins: [
         ...config.input.plugins,
-        uglify(),
+        uglify({
+          output: {
+            ...BANNER && {
+              preamble: BANNER,
+            },
+          },
+        }),
       ],
     },
     output: {
@@ -97,9 +105,14 @@ function clean() {
 }
 
 function buildJs() {
-  return Promise.all(rollupConfig.map(config => {
-    return rollup.rollup(config.input)
-    .then(bundle => bundle.write(config.output));
+  return Promise.all(rollupConfig.map(async config => {
+    const bundle = await rollup.rollup(config.input);
+    await bundle.write({
+      ...config.output,
+      ...BANNER && {
+        banner: BANNER,
+      },
+    });
   }));
 }
 

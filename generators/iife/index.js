@@ -5,6 +5,7 @@ module.exports = class ScriptGenerator extends Generator {
     this.composeWith(require.resolve('../app'), {
       output: ['iife'],
       bundleName: 'iife',
+      banner: false,
     });
   }
 }
