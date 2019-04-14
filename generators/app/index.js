@@ -204,27 +204,7 @@ module.exports = class BaseGenerator extends Generator {
       'rollup-plugin-commonjs',
       'rollup-plugin-alias',
       'husky',
-      '@babel/core',
-      '@babel/preset-env',
-      '@babel/plugin-transform-runtime',
-      'babel-plugin-module-resolver',
-
-      // stage-1
-      '@babel/plugin-proposal-export-namespace-from',
-      '@babel/plugin-proposal-export-default-from',
-      '@babel/plugin-proposal-pipeline-operator',
-
-      // stage-2
-      '@babel/plugin-proposal-decorators',
-      '@babel/plugin-proposal-function-sent',
-      '@babel/plugin-proposal-numeric-separator',
-      '@babel/plugin-proposal-throw-expressions',
-
-      // stage-3
-      '@babel/plugin-syntax-dynamic-import',
-      '@babel/plugin-syntax-import-meta',
-      '@babel/plugin-proposal-class-properties',
-      '@babel/plugin-proposal-json-strings',
+      '@gera2ld/plaid@~1.4.0',
     ];
     const deps = [
       '@babel/runtime',
@@ -238,19 +218,13 @@ module.exports = class BaseGenerator extends Generator {
     } else {
       devDeps.push(
         'eslint',
-        'eslint-config-airbnb-base',
-        'eslint-plugin-import',
         'babel-eslint',
-        'eslint-import-resolver-babel-module@beta',
+        'eslint-import-resolver-babel-module',
       );
     }
     if (this.state.css) {
       devDeps.push(
         'postcss',
-        'postcss-scss',
-        'precss',
-        'postcss-color-function',
-        'postcss-calc',
         'postcss-modules',
         'cssnano',
       );
@@ -262,8 +236,7 @@ module.exports = class BaseGenerator extends Generator {
     }
     if (this.state.jsx) {
       devDeps.push(
-        '@babel/plugin-transform-react-jsx',
-        'eslint-plugin-react',
+        '@gera2ld/plaid-react@~1.4.0',
       );
       deps.push(
         '@gera2ld/jsx-dom',
