@@ -24,7 +24,7 @@ One time usage with `npx`:
 $ npx -p @gera2ld/generator-rollup -p yo yo @gera2ld/rollup
 
 # or use the latest version from git
-$ npx -p git+ssh://git@github.com:gera2ld/generator-rollup.git -p yo yo @gera2ld/rollup
+$ npx -p https://github.com/gera2ld/generator-rollup.git -p yo yo @gera2ld/rollup
 ```
 
 Usage
