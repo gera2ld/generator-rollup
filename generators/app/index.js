@@ -138,6 +138,9 @@ module.exports = class BaseGenerator extends Generator {
     }
     if (hasFiles) {
       pkg.files = ['dist'];
+      pkg.publishConfig = {
+        access: 'public',
+      };
     }
     if (this.state.ts) {
       pkg.files = [
