@@ -108,6 +108,7 @@ function buildJs() {
   return Promise.all(rollupConfig.map(async config => {
     const bundle = await rollup.rollup(config.input);
     await bundle.write({
+      indent: false,
       ...config.output,
       ...BANNER && {
         banner: BANNER,
