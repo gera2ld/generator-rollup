@@ -57,6 +57,12 @@ module.exports = class BaseGenerator extends Generator {
         default: false,
       },
       {
+        name: 'gulp',
+        type: 'confirm',
+        message: 'Do you want to use Gulp?',
+        default: false,
+      },
+      {
         name: 'output',
         type: 'checkbox',
         message: 'Which types of output would you like to generate?',
@@ -119,8 +125,16 @@ module.exports = class BaseGenerator extends Generator {
       ...this.state.pkg,
       scripts: {
         ...this.state.pkg.scripts,
-        dev: 'gulp dev',
-        prebuild: 'npm run ci && gulp clean',
+        ...this.state.gulp ? {
+          dev: 'gulp dev',
+          clean: 'gulp clean',
+          'build:js': 'gulp build',
+        } : {
+          dev: 'rollup -wc rollup.conf.js',
+          clean: `del dist${this.state.ts ? ' types' : ''}`,
+          'build:js': 'rollup -c rollup.conf.js',
+        },
+        prebuild: 'npm run ci && npm run clean',
         ci: 'npm run lint',
       },
     };
@@ -131,6 +145,11 @@ module.exports = class BaseGenerator extends Generator {
     } else if (this.state.output.includes('umd')) {
       pkg.main = 'dist/index.js';
       hasFiles = true;
+    }
+    if (this.state.output.includes('umd')) {
+      const cdnEntry = this.state.minify ? 'dist/index.min.js' : 'dist/index.js';
+      pkg.unpkg = cdnEntry;
+      pkg.jsdelivr = cdnEntry;
     }
     if (this.state.output.includes('esm')) {
       pkg.module = 'dist/index.esm.js';
@@ -150,14 +169,14 @@ module.exports = class BaseGenerator extends Generator {
       pkg.typings = 'types/index.d.ts';
       pkg.scripts = {
         ...pkg.scripts,
-        build: 'tsc && gulp build',
+        build: 'tsc && npm run build:js',
         lint: 'tslint -c tslint.json \'src/**/*.ts\'',
       };
       this._copyDir('_ts', '.');
     } else {
       pkg.scripts = {
         ...pkg.scripts,
-        build: 'gulp build',
+        build: 'npm run build:js',
         lint: 'eslint .',
       };
       this._copyDir('_js', '.');
@@ -197,9 +216,6 @@ module.exports = class BaseGenerator extends Generator {
   install() {
     const devDeps = [
       'cross-env',
-      'del',
-      'gulp',
-      'fancy-log',
       'rollup',
       'rollup-plugin-babel',
       'rollup-plugin-replace',
@@ -212,6 +228,17 @@ module.exports = class BaseGenerator extends Generator {
     const deps = [
       '@babel/runtime',
     ];
+    if (this.state.gulp) {
+      devDeps.push(
+        'gulp',
+        'del',
+        'fancy-log',
+      );
+    } else {
+      devDeps.push(
+        'del-cli',
+      );
+    }
     if (this.state.ts) {
       devDeps.push(
         '@babel/preset-typescript',
