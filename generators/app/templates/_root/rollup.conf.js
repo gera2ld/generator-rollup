@@ -45,7 +45,7 @@ const rollupConfig = [
     },
     output: {
       format: 'umd',
-      file: `${DIST}/${FILENAME}.js`,
+      file: `${DIST}/${FILENAME}.umd.js`,
       name: '<%= bundleName %>',
     },
 <% if (minify) { -%>
@@ -61,7 +61,7 @@ const rollupConfig = [
     },
     output: {
       format: 'iife',
-      file: `${DIST}/${FILENAME}.iife.js`,
+      file: `${DIST}/${FILENAME}.js`,
       name: '<%= bundleName %>',
     },
 <% if (minify) { -%>

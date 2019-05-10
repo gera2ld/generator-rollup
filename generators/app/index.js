@@ -69,8 +69,8 @@ module.exports = class BaseGenerator extends Generator {
         choices: [
           { name: 'CommonJS', value: 'cjs' },
           { name: 'ES Module', value: 'esm' },
-          { name: 'UMD', value: 'umd' },
           { name: 'IIFE', value: 'iife' },
+          { name: 'UMD', value: 'umd' },
         ],
         default: ['cjs', 'esm'],
         when: !state.output,
@@ -143,11 +143,11 @@ module.exports = class BaseGenerator extends Generator {
     if (this.state.output.includes('cjs')) {
       pkg.main = 'dist/index.common.js';
       hasFiles = true;
-    } else if (this.state.output.includes('umd')) {
+    } else if (this.state.output.includes('iife')) {
       pkg.main = 'dist/index.js';
       hasFiles = true;
     }
-    if (this.state.output.includes('umd')) {
+    if (this.state.output.includes('iife')) {
       const cdnEntry = this.state.minify ? 'dist/index.min.js' : 'dist/index.js';
       pkg.unpkg = cdnEntry;
       pkg.jsdelivr = cdnEntry;
