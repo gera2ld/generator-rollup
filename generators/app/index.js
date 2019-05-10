@@ -135,6 +135,7 @@ module.exports = class BaseGenerator extends Generator {
           'build:js': 'rollup -c rollup.conf.js',
         },
         prebuild: 'npm run ci && npm run clean',
+        prepublishOnly: 'npm run build',
         ci: 'npm run lint',
       },
     };
