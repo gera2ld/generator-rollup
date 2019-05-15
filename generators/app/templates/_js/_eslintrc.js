@@ -12,7 +12,7 @@ module.exports = {
     },
 <% if (jsx) { -%>
     react: {
-      pragma: 'h',
+      pragma: 'React',
     },
 <% } -%>
   },

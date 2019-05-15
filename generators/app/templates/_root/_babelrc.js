@@ -5,7 +5,6 @@ module.exports = {
 <% if (jsx) { -%>
     ['@babel/preset-typescript', {
       isTSX: true,
-      jsxPragma: 'h',
       allExtensions: true,
     }],
 <% } else { -%>
@@ -23,7 +22,8 @@ module.exports = {
 
     // react
     ['@babel/plugin-transform-react-jsx', {
-      pragma: 'h',
+      pragma: 'React.createElement',
+      pragmaFrag: 'React.Fragment',
     }],
 <% } -%>
 <% if (test) { -%>
