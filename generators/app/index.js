@@ -30,6 +30,7 @@ module.exports = class BaseGenerator extends Generator {
     const defaults = {
       bundleName: 'noname',
       banner: true,
+      cdn: true,
       minify: false,
       pkg,
     };
@@ -147,7 +148,7 @@ module.exports = class BaseGenerator extends Generator {
       pkg.main = 'dist/index.js';
       hasFiles = true;
     }
-    if (this.state.output.includes('iife')) {
+    if (this.state.cdn && this.state.output.includes('iife')) {
       const cdnEntry = this.state.minify ? 'dist/index.min.js' : 'dist/index.js';
       pkg.unpkg = cdnEntry;
       pkg.jsdelivr = cdnEntry;

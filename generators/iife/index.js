@@ -6,6 +6,7 @@ module.exports = class ScriptGenerator extends Generator {
       output: ['iife'],
       bundleName: 'iife',
       banner: false,
+      cdn: false,
     });
   }
 }
