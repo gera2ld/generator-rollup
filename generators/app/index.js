@@ -197,13 +197,12 @@ module.exports = class BaseGenerator extends Generator {
         ],
       };
     }
-    this.fs.extendJSON(this.destinationPath('package.json'), pkg);
+    this.fs.writeJSON(this.destinationPath('package.json'), pkg);
   }
 
   app() {
-    const ext = this.state.ts ? '.ts' : '.js';
-    this.fs.copyTpl(this.templatePath('src/index.js'), this.destinationPath(`src/index${ext}`), this.state);
-    this.fs.copy(this.templatePath('src/util.js'), this.destinationPath(`src/util${ext}`));
+    this.fs.copyTpl(this.templatePath('src/index.js'), this.destinationPath(`src/index${this.state.ts ? '.ts' : '.js'}`), this.state);
+    this.fs.copyTpl(this.templatePath('src/app.js'), this.destinationPath(`src/app${this.state.ts ? '.tsx' : '.js'}`), this.state);
     if (this.state.ts) {
       this.fs.copy(this.templatePath('src/index.d.ts'), this.destinationPath('src/index.d.ts'));
     }

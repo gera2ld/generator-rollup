@@ -1,5 +1,5 @@
 require('@babel/register')({
-  extensions: ['.ts', '.js'],
+  extensions: ['.ts', '.tsx', '.js', '.jsx'],
   plugins: [
     '@babel/plugin-transform-runtime',
   ],
