@@ -21,10 +21,7 @@ module.exports = {
 <% if (jsx) { -%>
 
     // react
-    ['@babel/plugin-transform-react-jsx', {
-      pragma: 'React.createElement',
-      pragmaFrag: 'React.Fragment',
-    }],
+    '@babel/plugin-transform-react-jsx',
 <% } -%>
 <% if (test) { -%>
 
