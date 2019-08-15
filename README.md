@@ -1,5 +1,4 @@
-@gera2ld/generator-rollup
-===
+# @gera2ld/generator-rollup
 
 ![NPM](https://img.shields.io/npm/v/@gera2ld/generator-rollup.svg)
 
@@ -7,8 +6,8 @@ Yeoman generator to create a workspace easy to be packed with Rollup.
 
 It is aimed to generate projects based on JavaScript files, e.g. userscripts, JavaScript libraries.
 
-Installation
----
+## Installation
+
 It is highly recommended to use with Yarn.
 
 ``` sh
@@ -27,8 +26,7 @@ $ npx -p @gera2ld/generator-rollup -p yo yo @gera2ld/rollup
 $ npx -p https://github.com/gera2ld/generator-rollup.git -p yo yo @gera2ld/rollup
 ```
 
-Usage
----
+## Usage
 
 1. Make sure yeoman is installed
 
