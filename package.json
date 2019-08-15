@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Generate an ES6 project with rollup",
   "files": [
-    "generators"
+    "lib"
   ],
   "keywords": [
     "yeoman-generator",
