@@ -3,7 +3,6 @@
   "version": "0.0.0",
   "description": "",
   "author": "",
-  "license": "ISC",
   "husky": {
     "hooks": {
       "pre-push": "npm run lint"
