@@ -30,27 +30,24 @@ $ npx -p https://github.com/gera2ld/generator-rollup.git -p yo yo @gera2ld/rollu
 
 ## Usage
 
-1. Make sure yeoman is installed
+### Prerequisite
+
+- Make sure yeoman is installed
 
    ``` sh
    $ yarn global add yo
    ```
 
-2. Initialize a library repo
+### Initialization
+
+- Initialize a library repo
 
    ```sh
    $ cd my-library
    $ yo @gera2ld/rollup
    ```
 
-3. Initialize a browser-only script / iife repo
-
-   ```sh
-   $ cd my-script
-   $ yo @gera2ld/rollup:iife
-   ```
-
-3. Initialize a userscript repo
+- Initialize a userscript repo
 
    ```sh
    $ cd my-script
