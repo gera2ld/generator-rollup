@@ -10,7 +10,6 @@
     "jsx": "react"
   },
   "files": [
-    "src/index.ts",
-    "src/index.d.ts"
+    "src/index.ts"
   ]
 }
