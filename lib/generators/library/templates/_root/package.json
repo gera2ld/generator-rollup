@@ -3,10 +3,5 @@
   "version": "0.0.0",
   "description": "",
   "author": "",
-  "license": "MIT",
-  "husky": {
-    "hooks": {
-      "pre-push": "npm run lint"
-    }
-  }
+  "license": "MIT"
 }
