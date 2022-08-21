@@ -1,7 +1,7 @@
-import { VChildren, DomNode } from '@gera2ld/jsx-dom';
+import { VNode, DomNode } from '@gera2ld/jsx-dom';
 
 declare global {
   namespace JSX {
-    type Element = VChildren; // Change to DomNode if jsxFactory is set to VM.hm
+    type Element = VNode; // Change to DomNode if jsxFactory is set to VM.hm
   }
 }
