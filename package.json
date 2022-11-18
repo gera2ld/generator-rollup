@@ -12,7 +12,7 @@
   "author": "Gerald <gera2ld@live.com>",
   "license": "ISC",
   "dependencies": {
-    "globby": "^11.0.2",
+    "globby": "^13.1.2",
     "lodash": "^4.17.21",
     "yeoman-generator": "^5.7.0"
   },
@@ -25,7 +25,7 @@
   },
   "homepage": "https://github.com/gera2ld/generator-rollup#readme",
   "devDependencies": {
-    "npm-check-updates": "^16.0.5"
+    "npm-check-updates": "^16.4.1"
   },
   "scripts": {
     "update:deps": "ncu --packageFile lib/util/deps.json"
