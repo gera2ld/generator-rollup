@@ -2,6 +2,7 @@
   "name": "@gera2ld/generator-rollup",
   "version": "1.0.0",
   "description": "Generate an ES6 project with rollup",
+  "type": "module",
   "files": [
     "lib"
   ],
