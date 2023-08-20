@@ -4,18 +4,18 @@ This project is generated from [@gera2ld/generator-rollup](https://github.com/ge
 
 ## Development
 
-``` sh
-$ yarn dev
+```bash
+$ pnpm dev
 ```
 
 ## Building
 
-```sh
-$ yarn build
+```bash
+$ pnpm build
 ```
 
 ## Lint
 
-``` sh
-$ yarn lint
+```bash
+$ pnpm lint
 ```
